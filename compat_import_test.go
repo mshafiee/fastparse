@@ -1,0 +1,13 @@
+// Copyright 2025 The Go Authors. All rights reserved.
+// Portions Copyright 2025 Mohammad Shafiee. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+package fastparse_test
+
+import . "github.com/mshafiee/fastparse"
+
+var (
+	baseError    = BaseError
+	bitSizeError = BitSizeError
+)
