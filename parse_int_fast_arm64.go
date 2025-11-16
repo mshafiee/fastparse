@@ -1,0 +1,11 @@
+//go:build arm64
+
+package fastparse
+
+// parseIntFastAsm is the ARM64 assembly implementation of fast integer parsing.
+// It parses simple integer patterns: [-+]?[0-9]+
+// Returns (result, true) on success, (0, false) to fall back to generic implementation.
+//
+//go:noescape
+func parseIntFastAsm(s string, bitSize int) (result int64, ok bool)
+

@@ -1,0 +1,17 @@
+//go:build !amd64 && !arm64
+
+package quoting
+
+// hasASM indicates whether assembly implementation is available
+const hasASM = false
+
+// needsEscapingASM is not available on this platform
+func needsEscapingASM(s string, quote byte, mode int) bool {
+	panic("unreachable")
+}
+
+// needsEscapingOptimized is the same as ASM version on non-amd64
+func needsEscapingOptimized(s string, quote byte, mode int) bool {
+	return needsEscapingASM(s, quote, mode)
+}
+
