@@ -58,12 +58,11 @@ jobs:
         echo "GOARCH: $(go env GOARCH)"
         
         # Run tests with race detector and coverage
-        # Capture output and exit code
-        TEST_OUTPUT=$(go test -v -race -timeout=10m -coverprofile=coverage.txt -covermode=atomic ./... 2>&1)
+        # Use set +e to capture exit code without failing immediately
+        set +e
+        go test -v -race -timeout=10m -coverprofile=coverage.txt -covermode=atomic ./...
         TEST_EXIT=$?
-        
-        # Always show output
-        echo "$TEST_OUTPUT"
+        set -e
         
         # Check coverage file
         if [ -f coverage.txt ]; then
