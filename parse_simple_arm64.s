@@ -11,10 +11,10 @@
 // Fast path parser for simple decimal floats: [-]?[0-9]+\.?[0-9]*([eE][-+]?[0-9]+)?
 // Returns (result, mantissa, exp, neg, true) on success.
 // Returns (0, mantissa, exp, neg, false) if parsed but can't convert (for Eisel-Lemire fallback).
-TEXT ·parseSimpleFastAsm(SB), NOSPLIT, $64-48
+TEXT ·parseSimpleFastAsm(SB), NOSPLIT, $64-42
 	// Load string pointer and length
-	MOVD s_ptr+0(FP), R0    // R0 = string pointer
-	MOVD s_len+8(FP), R1    // R1 = string length
+	MOVD s_base+0(FP), R0    // R0 = string pointer
+	MOVD s_len+8(FP), R1     // R1 = string length
 	
 	// Check for empty string
 	CBZ R1, return_false

@@ -9,8 +9,8 @@
 // func parseHexMantissaAsm(s string, offset int, maxDigits int) (mantissa uint64, hexIntDigits int, hexFracDigits int, digitsParsed int, ok bool)
 // Optimized hex digit parsing for ARM64
 TEXT ·parseHexMantissaAsm(SB), NOSPLIT, $0-65
-	MOVD s_ptr+0(FP), R0        // R0 = string pointer
-	MOVD s_len+8(FP), R1        // R1 = string length
+	MOVD s_base+0(FP), R0        // R0 = string pointer
+	MOVD s_len+8(FP), R1          // R1 = string length
 	MOVD offset+16(FP), R2      // R2 = offset
 	MOVD maxDigits+24(FP), R3   // R3 = maxDigits
 	

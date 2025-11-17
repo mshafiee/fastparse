@@ -10,10 +10,10 @@
 // func parseUintFastAsm(s string, base int, bitSize int) (result uint64, ok bool)
 // Fast path parser for simple unsigned integers in base 10 or base 16
 // Returns (0, false) if pattern doesn't match or requires fallback
-TEXT ·parseUintFastAsm(SB), NOSPLIT, $0-49
+TEXT ·parseUintFastAsm(SB), NOSPLIT, $0-41
 	// Load arguments
-	MOVD s_ptr+0(FP), R0     // R0 = string pointer
-	MOVD s_len+8(FP), R1     // R1 = string length
+	MOVD s_base+0(FP), R0     // R0 = string pointer
+	MOVD s_len+8(FP), R1      // R1 = string length
 	MOVD base+16(FP), R2     // R2 = base
 	MOVD bitSize+24(FP), R3  // R3 = bitSize
 	

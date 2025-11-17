@@ -9,8 +9,8 @@
 // func hasUnderscoreNEON(s string) bool
 // Scans string for underscore using scalar loop (NEON not fully supported in Go assembler)
 TEXT ·hasUnderscoreNEON(SB), NOSPLIT, $0-17
-	MOVD s_ptr+0(FP), R0        // R0 = string pointer
-	MOVD s_len+8(FP), R1        // R1 = string length
+	MOVD s_base+0(FP), R0        // R0 = string pointer
+	MOVD s_len+8(FP), R1         // R1 = string length
 	
 	// Check for empty string
 	CBZ R1, not_found

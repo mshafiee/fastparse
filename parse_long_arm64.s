@@ -10,10 +10,10 @@
 // func parseLongDecimalFastAsm(s string) (result float64, ok bool)
 // Handles long decimals (20-100 digits) without FSA overhead
 // Pattern: [-]?[0-9]+\.?[0-9]* (no exponent, no underscores)
-TEXT ·parseLongDecimalFastAsm(SB), NOSPLIT, $96-32
+TEXT ·parseLongDecimalFastAsm(SB), NOSPLIT, $96-25
 	// Load string pointer and length
-	MOVD s_ptr+0(FP), R0    // R0 = string pointer
-	MOVD s_len+8(FP), R1    // R1 = string length
+	MOVD s_base+0(FP), R0    // R0 = string pointer
+	MOVD s_len+8(FP), R1     // R1 = string length
 	
 	// Initialize index
 	MOVD $0, R2              // R2 = index (i)

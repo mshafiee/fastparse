@@ -9,10 +9,10 @@
 // func classifyArm64(s string) Pattern
 // Ultra-fast pattern classifier for ARM64
 // Returns PatternSimple (0) for simple patterns, PatternComplex (1) for complex patterns
-TEXT ·classifyArm64(SB), NOSPLIT, $0-24
+TEXT ·classifyArm64(SB), NOSPLIT, $0-17
 	// Load string pointer and length
-	MOVD s_ptr+0(FP), R0     // R0 = string pointer
-	MOVD s_len+8(FP), R1     // R1 = length
+	MOVD s_base+0(FP), R0     // R0 = string pointer
+	MOVD s_len+8(FP), R1      // R1 = length
 	
 	// Quick length check
 	CBZ R1, complex_pattern   // Empty string

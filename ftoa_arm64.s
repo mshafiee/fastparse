@@ -5,7 +5,7 @@
 #include "textflag.h"
 
 // func formatExponentASM(dst []byte, exp int, fmt byte) int
-TEXT ·formatExponentASM(SB), NOSPLIT, $0-35
+TEXT ·formatExponentASM(SB), NOSPLIT, $0-48
 	MOVD dst_base+0(FP), R0  // R0 = dst pointer
 	MOVD R0, R10             // R10 = save original pointer
 	MOVD exp+24(FP), R1      // R1 = exp (signed)
@@ -69,7 +69,7 @@ two_digit_exp:
 	
 	// Calculate length
 	SUB R10, R0
-	MOVD R0, ret+32(FP)
+	MOVD R0, ret+40(FP)
 	RET
 	
 single_digit_exp:
@@ -83,6 +83,6 @@ single_digit_exp:
 	
 	// Calculate length
 	SUB R10, R0
-	MOVD R0, ret+32(FP)
+	MOVD R0, ret+40(FP)
 	RET
 

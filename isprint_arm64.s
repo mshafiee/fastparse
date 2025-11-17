@@ -8,7 +8,7 @@
 
 // func isPrintASM(r rune) bool
 // Optimized binary search for Unicode ranges > 0xFF
-TEXT ·isPrintASM(SB), NOSPLIT, $0-5
+TEXT ·isPrintASM(SB), NOSPLIT, $0-9
 	MOVW r+0(FP), R0         // R0 = r (rune)
 	
 	// Fast check: if r >= 0x20000, it's printable
@@ -63,13 +63,13 @@ not_print_go_left:
 found_in_not_print:
 	// Found in isNotPrint list, so it's NOT printable
 	MOVD $0, R0
-	MOVB R0, ret+4(FP)
+	MOVB R0, ret+8(FP)
 	RET
 	
 not_found_not_print:
 	// Not found in isNotPrint, so it IS printable
 	MOVD $1, R0
-	MOVB R0, ret+4(FP)
+	MOVB R0, ret+8(FP)
 	RET
 	
 check_16bit:
@@ -132,7 +132,7 @@ print16_not_found:
 	
 not_printable:
 	MOVD $0, R0
-	MOVB R0, ret+4(FP)
+	MOVB R0, ret+8(FP)
 	RET
 	
 check_not_print16:
@@ -170,6 +170,6 @@ not_print16_go_left:
 	
 is_printable:
 	MOVD $1, R0
-	MOVB R0, ret+4(FP)
+	MOVB R0, ret+8(FP)
 	RET
 

@@ -8,9 +8,9 @@
 
 // func parseDigitsToUint64Asm(s string, offset int) (mantissa uint64, digitCount int, ok bool)
 // Optimized digit parsing for ARM64
-TEXT ·parseDigitsToUint64Asm(SB), NOSPLIT, $0-49
-	MOVD s_ptr+0(FP), R0        // R0 = string pointer
-	MOVD s_len+8(FP), R1        // R1 = string length
+TEXT ·parseDigitsToUint64Asm(SB), NOSPLIT, $0-41
+	MOVD s_base+0(FP), R0        // R0 = string pointer
+	MOVD s_len+8(FP), R1         // R1 = string length
 	MOVD offset+16(FP), R2      // R2 = offset
 	
 	// Check bounds
@@ -74,9 +74,9 @@ parse_error:
 
 // func parseDigitsWithDotAsm(s string, offset int) (mantissa uint64, digitsBeforeDot int, totalDigits int, foundDot bool, ok bool)
 // Optimized digit parsing with decimal point support for ARM64
-TEXT ·parseDigitsWithDotAsm(SB), NOSPLIT, $0-58
-	MOVD s_ptr+0(FP), R0        // R0 = string pointer
-	MOVD s_len+8(FP), R1        // R1 = string length
+TEXT ·parseDigitsWithDotAsm(SB), NOSPLIT, $0-50
+	MOVD s_base+0(FP), R0        // R0 = string pointer
+	MOVD s_len+8(FP), R1         // R1 = string length
 	MOVD offset+16(FP), R2      // R2 = offset
 	
 	// Check bounds

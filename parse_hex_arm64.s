@@ -9,10 +9,10 @@
 
 // func parseHexFastAsm(s string) (result float64, ok bool)
 // Fast path parser for hex floats: [-]?0[xX][0-9a-fA-F]+\.?[0-9a-fA-F]*[pP][-+]?[0-9]+
-TEXT ·parseHexFastAsm(SB), NOSPLIT, $96-32
+TEXT ·parseHexFastAsm(SB), NOSPLIT, $96-25
 	// Load string pointer and length
-	MOVD s_ptr+0(FP), R0    // R0 = string pointer
-	MOVD s_len+8(FP), R1    // R1 = string length
+	MOVD s_base+0(FP), R0    // R0 = string pointer
+	MOVD s_len+8(FP), R1     // R1 = string length
 	
 	// Check minimum length (need at least "0x0p0" = 5 chars)
 	CMP $5, R1

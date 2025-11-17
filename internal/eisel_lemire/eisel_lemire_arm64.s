@@ -8,7 +8,7 @@
 
 // func tryParseAsm(mantissa uint64, exp10 int, tablePtrHigh *uint64, tablePtrLow *uint64) (result float64, ok bool)
 // Optimized Eisel-Lemire algorithm using ARM64 UMULH instruction with wider approximation
-TEXT ·tryParseAsm(SB), NOSPLIT, $0-48
+TEXT ·tryParseAsm(SB), NOSPLIT, $0-41
 	// Load arguments
 	MOVD mantissa+0(FP), R0     // R0 = mantissa
 	MOVD exp10+8(FP), R1        // R1 = exp10 (int)

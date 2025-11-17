@@ -10,10 +10,10 @@
 // func parseDirectFloatAsm(s string) (result float64, ok bool)
 // Ultra-fast direct conversion for common float patterns
 // Handles: integers, simple decimals (≤8 digits), small exponents (≤15)
-TEXT ·parseDirectFloatAsm(SB), NOSPLIT, $64-32
+TEXT ·parseDirectFloatAsm(SB), NOSPLIT, $64-25
 	// Load string pointer and length
-	MOVD s_ptr+0(FP), R0    // R0 = string pointer
-	MOVD s_len+8(FP), R1    // R1 = string length
+	MOVD s_base+0(FP), R0    // R0 = string pointer
+	MOVD s_len+8(FP), R1     // R1 = string length
 	
 	// Quick reject: empty or too long
 	CBZ R1, return_false

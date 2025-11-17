@@ -8,7 +8,7 @@
 
 // func needsEscapingASM(s string, quote byte, mode int) bool
 // NEON-optimized version that processes 16 bytes at a time
-TEXT ·needsEscapingASM(SB), NOSPLIT, $0-34
+TEXT ·needsEscapingASM(SB), NOSPLIT, $0-33
 	// Get string pointer and length
 	MOVD s_base+0(FP), R0    // R0 = string data pointer
 	MOVD s_len+8(FP), R1     // R1 = string length

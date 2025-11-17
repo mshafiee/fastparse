@@ -26,7 +26,7 @@
 // F0 = result (float64)
 // 16(FP) = error interface type
 // 24(FP) = error interface data
-TEXT ·ParseFloatAsm(SB), 0, $48-32
+TEXT ·ParseFloatAsm(SB), 0, $48-40
 	MOVD s_base+0(FP), R0
 	MOVD s_len+8(FP), R1
 	
@@ -305,8 +305,8 @@ finalize:
 	
 	// Return nil error
 	MOVD ·nilError(SB), R0
-	MOVD R0, ret_err_type+24(FP)
-	MOVD $0, ret_err_data+32(FP)
+	MOVD R0, ret1_itable+24(FP)
+	MOVD $0, ret1_data+32(FP)
 	RET
 	
 fallback:
@@ -324,8 +324,8 @@ fallback:
 	
 	MOVD 32(RSP), R0
 	MOVD 40(RSP), R1
-	MOVD R0, ret_err_type+24(FP)
-	MOVD R1, ret_err_data+32(FP)
+	MOVD R0, ret1_itable+24(FP)
+	MOVD R1, ret1_data+32(FP)
 	
 	RET
 

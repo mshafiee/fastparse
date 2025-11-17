@@ -33,7 +33,7 @@ DATA smallsStringData<>+192(SB)/8, $0x3939383739363939  // "96979899"
 GLOBL smallsStringData<>(SB), RODATA, $200
 
 // func formatIntBase10ASM(dst []byte, u uint64) int
-TEXT ·formatIntBase10ASM(SB), NOSPLIT, $24-36
+TEXT ·formatIntBase10ASM(SB), NOSPLIT, $24-40
 	MOVD dst_base+0(FP), R0  // R0 = dst pointer
 	MOVD u+24(FP), R1        // R1 = u
 	

@@ -10,10 +10,10 @@
 // func parseIntNEON(s string, bitSize int) (result int64, ok bool)
 // Optimized integer parser for ARM64
 // Uses efficient scalar operations with MADD instruction
-TEXT ·parseIntNEON(SB), NOSPLIT, $0-41
+TEXT ·parseIntNEON(SB), NOSPLIT, $0-33
 	// Load arguments
-	MOVD s_ptr+0(FP), R0    // R0 = string pointer
-	MOVD s_len+8(FP), R1    // R1 = string length
+	MOVD s_base+0(FP), R0    // R0 = string pointer
+	MOVD s_len+8(FP), R1     // R1 = string length
 	MOVD bitSize+16(FP), R2 // R2 = bitSize
 	
 	// Check for empty string
