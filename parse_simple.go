@@ -99,9 +99,7 @@ func parseSimpleFast(s string) (float64, uint64, int, bool, bool) {
 
 	// Optional exponent
 	exp10 := int64(0)
-	hasExponent := false
 	if i < len(s) && (s[i] == 'e' || s[i] == 'E') {
-		hasExponent = true
 		i++
 		if i >= len(s) {
 			return 0, 0, 0, false, false
