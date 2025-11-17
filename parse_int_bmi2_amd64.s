@@ -66,7 +66,7 @@ digit_loop:
 	
 	// Load and validate digit
 	MOVBLZX (DI)(R9*1), AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA check_valid
 	
@@ -123,7 +123,7 @@ check_max_negative:
 	JNE return_false
 	
 	// Return minimum negative value
-	NEG R14
+	NEGQ R14
 	MOVQ R14, result+24(FP)
 	MOVB $1, ok+32(FP)
 	RET
@@ -162,7 +162,7 @@ apply_sign:
 	// Apply sign if negative
 	TESTQ R11, R11
 	JZ return_result
-	NEG R10
+	NEGQ R10
 	
 	// Check int32 negative range
 	CMPQ R8, $32
@@ -224,7 +224,7 @@ digit_loop_u:
 	
 	// Load and validate digit
 	MOVBLZX (DI)(R9*1), AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA check_valid_u
 	

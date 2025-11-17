@@ -71,7 +71,7 @@ parse_digits:
 	
 	// Check if digit
 	MOVQ CX, AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA check_complete  // Not a digit, check if we're done
 	
@@ -108,7 +108,7 @@ continue_loop:
 	// Load next character
 	MOVBLZX (DI)(R9*1), CX
 	MOVQ CX, AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA check_complete
 	JMP digit_loop
@@ -135,7 +135,7 @@ check_min_negative:
 	// Check if there are more digits (would be overflow)
 	MOVBLZX (DI)(R9*1), CX
 	MOVQ CX, AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JBE return_false  // More digits = overflow
 	

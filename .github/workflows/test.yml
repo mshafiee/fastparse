@@ -1,4 +1,4 @@
-name: CI Tests
+name: Tests
 
 on:
   push:
@@ -8,28 +8,75 @@ on:
 
 jobs:
   test:
-    name: Test on ${{ matrix.arch }}
-    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        include:
-          - arch: amd64
-            runner: ubuntu-latest
-          - arch: arm64
-            runner: ubuntu-latest-arm64
+        os: [ubuntu-latest, macos-latest]
+        go-version: ['1.24']
+    runs-on: ${{ matrix.os }}
     
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.24'
-      
-      - name: Download dependencies
-        run: go mod download
-      
-      - name: Run tests
-        run: go test ./...
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: ${{ matrix.go-version }}
+    
+    - name: Display CPU info (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        echo "=== CPU Information ==="
+        cat /proc/cpuinfo | grep "model name" | head -1
+        echo ""
+        echo "=== CPU Flags ==="
+        cat /proc/cpuinfo | grep "flags" | head -1 | grep -o "avx[^ ]*" || echo "No AVX flags found"
+        echo ""
+        echo "=== Checking for specific features ==="
+        grep -q avx2 /proc/cpuinfo && echo "✓ AVX2 available" || echo "✗ AVX2 not available"
+        grep -q avx512 /proc/cpuinfo && echo "✓ AVX-512 available" || echo "✗ AVX-512 not available"
+        grep -q bmi2 /proc/cpuinfo && echo "✓ BMI2 available" || echo "✗ BMI2 not available"
+    
+    - name: Display CPU info (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        echo "=== CPU Information ==="
+        sysctl -n machdep.cpu.brand_string
+        echo ""
+        echo "=== CPU Features ==="
+        sysctl machdep.cpu.features machdep.cpu.leaf7_features 2>/dev/null || echo "Feature detection not available"
+    
+    - name: Build
+      run: go build -v ./...
+    
+    - name: Test
+      run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+    
+    - name: Benchmark
+      run: go test -bench=. -benchmem -run=^$ ./... | tee benchmark.txt
+    
+    - name: Upload coverage
+      if: matrix.os == 'ubuntu-latest'
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.txt
+        fail_ci_if_error: false
 
+  # Test on different architectures
+  test-cross-compile:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goarch: [amd64, arm64, 386]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24'
+    
+    - name: Cross-compile for ${{ matrix.goarch }}
+      run: GOARCH=${{ matrix.goarch }} go build -v ./...
+      env:
+        CGO_ENABLED: 0

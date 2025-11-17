@@ -40,16 +40,16 @@ check_0x_prefix:
 	CMPQ R8, SI
 	JGE return_false
 	MOVBLZX (DI)(R8*1), AX
-	CMPB AX, CHAR_0
+	CMPB AX, $CHAR_ZERO
 	JNE return_false
 	
 	INCQ R8
 	CMPQ R8, SI
 	JGE return_false
 	MOVBLZX (DI)(R8*1), AX
-	CMPB AX, CHAR_x
+	CMPB AX, $CHAR_X_LOWER
 	JE has_x
-	CMPB AX, CHAR_X
+	CMPB AX, $CHAR_X_UPPER
 	JNE return_false
 	
 has_x:
@@ -72,7 +72,7 @@ parse_hex_loop:
 	
 	// Check if '0'-'9'
 	MOVQ CX, BX
-	SUBB CHAR_0, BX
+	SUBB $CHAR_ZERO, BX
 	CMPB BX, $9
 	JA not_0_9
 	MOVQ BX, AX
@@ -82,7 +82,7 @@ parse_hex_loop:
 not_0_9:
 	// Check if 'a'-'f'
 	MOVQ CX, BX
-	SUBB CHAR_a, BX
+	SUBB $CHAR_A_LOWER, BX
 	CMPB BX, $5
 	JA not_a_f
 	ADDQ $10, BX
@@ -93,7 +93,7 @@ not_0_9:
 not_a_f:
 	// Check if 'A'-'F'
 	MOVQ CX, BX
-	SUBB CHAR_A, BX
+	SUBB $CHAR_A_UPPER, BX
 	CMPB BX, $5
 	JA not_hex_digit
 	ADDQ $10, BX
@@ -140,9 +140,9 @@ check_p_marker:
 	JZ return_false
 	
 	// Require p or P
-	CMPB CX, CHAR_p
+	CMPB CX, $CHAR_P_LOWER
 	JE parse_binary_exp
-	CMPB CX, CHAR_P
+	CMPB CX, $CHAR_P_UPPER
 	JNE return_false
 	
 parse_binary_exp:
@@ -173,7 +173,7 @@ parse_binary_digits:
 	
 	// Must have at least one digit
 	MOVBLZX (DI)(R8*1), AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA return_false
 	
@@ -185,7 +185,7 @@ binary_digit_loop:
 	
 	MOVBLZX (DI)(R8*1), CX
 	MOVQ CX, AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA binary_exp_done
 	

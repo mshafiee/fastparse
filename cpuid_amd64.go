@@ -28,7 +28,7 @@ func cpuidAMD64(eaxIn, ecxIn uint32) (eax, ebx, ecx, edx uint32)
 func initCPUFeatures() {
 	// Check for AVX2 and BMI2 support
 	// CPUID.(EAX=07H, ECX=0H):EBX
-	_, ebx, ecx, _ := cpuidAMD64(7, 0)
+	_, ebx, _, _ := cpuidAMD64(7, 0)
 	hasAVX2 = (ebx & (1 << 5)) != 0
 	hasBMI2 = (ebx & (1 << 8)) != 0
 	

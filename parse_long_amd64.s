@@ -40,7 +40,7 @@ check_after_sign:
 	
 	// Check next char is digit
 	MOVBLZX (DI)(R8*1), AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA return_false
 	
@@ -58,7 +58,7 @@ skip_zeros:
 	CMPQ R8, SI
 	JGE return_false
 	MOVBLZX (DI)(R8*1), AX
-	CMPB AX, CHAR_0
+	CMPB AX, $CHAR_ZERO
 	JNE collect_integer
 	INCQ R8
 	JMP skip_zeros
@@ -70,7 +70,7 @@ collect_integer:
 	
 	MOVBLZX (DI)(R8*1), CX
 	MOVQ CX, AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA check_dot
 	
@@ -100,7 +100,7 @@ collect_fraction:
 	
 	MOVBLZX (DI)(R8*1), CX
 	MOVQ CX, AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA check_end
 	
@@ -144,7 +144,7 @@ check_end:
 	TESTQ R10, R10
 	JZ return_zero
 	
-	CVTSI2SD R10, X0
+	CVTSQ2SD R10, X0
 	
 	// Apply sign
 	TESTQ R9, R9

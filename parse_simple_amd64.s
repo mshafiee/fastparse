@@ -51,7 +51,7 @@ check_first_digit:
 	
 	// Must start with digit after sign
 	MOVBLZX (DI)(R8*1), AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA return_false
 	
@@ -65,7 +65,7 @@ parse_mantissa_loop:
 	
 	// Check if digit ('0'-'9')
 	MOVQ CX, AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA not_mantissa_digit
 	
@@ -104,9 +104,9 @@ not_mantissa_digit:
 	
 check_exponent:
 	// Check for exponent marker 'e' or 'E'
-	CMPB CX, CHAR_e
+	CMPB CX, $CHAR_E_LOWER
 	JE parse_exponent
-	CMPB CX, CHAR_E
+	CMPB CX, $CHAR_E_UPPER
 	JE parse_exponent
 	
 	// Not e/E, check if we're done
@@ -140,7 +140,7 @@ parse_exp_digits:
 	
 	// Must have at least one digit
 	MOVBLZX (DI)(R8*1), AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA return_false
 	
@@ -154,7 +154,7 @@ exp_digit_loop:
 	
 	// Check if digit
 	MOVQ CX, AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA exp_done
 	
@@ -219,7 +219,7 @@ do_eisel_lemire:
 	JNZ eisel_complex
 	
 	// exp == 0: just convert mantissa to float64
-	CVTSI2SD R9, X0
+	CVTSQ2SD R9, X0
 	TESTQ R11, R11
 	JZ return_result
 	// Apply negative sign
@@ -253,7 +253,7 @@ eisel_complex:
 	
 	// Use direct power-of-10 table for [-15, 15]
 	// Convert mantissa to float64
-	CVTSI2SD R9, X0
+	CVTSQ2SD R9, X0
 	
 	// Apply sign to mantissa
 	TESTQ R11, R11

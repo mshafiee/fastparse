@@ -92,7 +92,8 @@ process_8_digits:
 	MOVQ CX, R13
 	MOVQ $0xF6F6F6F6F6F6F6F6, R14  // ~9 in each byte (actually 246 = -10 in u8)
 	ADDQ R14, R13
-	ANDQ $0x8080808080808080, R13
+	MOVQ $0x8080808080808080, BX
+	ANDQ BX, R13
 	TESTQ R13, R13
 	JNZ process_4            // Some digit out of range
 	
@@ -183,44 +184,44 @@ process_4:
 	CMPQ R12, $4
 	JL scalar_loop
 	
-	MOVL (DI)(R9*1), EAX     // EAX = 4 ASCII bytes
+	MOVL (DI)(R9*1), AX     // AX = 4 ASCII bytes
 	
 	// Subtract '0' from all bytes
-	MOVL $0x30303030, EBX
-	MOVL EAX, ECX
-	SUBL EBX, ECX            // ECX = bytes - '0'
+	MOVL $0x30303030, BX
+	MOVL AX, CX
+	SUBL BX, CX            // CX = bytes - '0'
 	
 	// Validate all 4 bytes
-	MOVL ECX, EDX
-	MOVL $0xF6F6F6F6, EBX
-	ADDL EBX, EDX
-	ANDL $0x80808080, EDX
-	TESTL EDX, EDX
+	MOVL CX, DX
+	MOVL $0xF6F6F6F6, BX
+	ADDL BX, DX
+	ANDL $0x80808080, DX
+	TESTL DX, DX
 	JNZ scalar_loop
 	
 	// Extract 4 digits
 	IMULQ $10000, R10
 	JC return_false
 	
-	MOVL ECX, EDX
-	SHRL $24, EDX            // d3
+	MOVL CX, DX
+	SHRL $24, DX            // d3
 	IMULQ $1000, DX
 	ADDQ DX, R10
 	
-	MOVL ECX, EDX
-	SHRL $16, EDX
-	ANDL $0xFF, EDX          // d2
+	MOVL CX, DX
+	SHRL $16, DX
+	ANDL $0xFF, DX          // d2
 	IMULQ $100, DX
 	ADDQ DX, R10
 	
-	MOVL ECX, EDX
-	SHRL $8, EDX
-	ANDL $0xFF, EDX          // d1
+	MOVL CX, DX
+	SHRL $8, DX
+	ANDL $0xFF, DX          // d1
 	IMULQ $10, DX
 	ADDQ DX, R10
 	
-	MOVL ECX, EDX
-	ANDL $0xFF, EDX          // d0
+	MOVL CX, DX
+	ANDL $0xFF, DX          // d0
 	ADDQ DX, R10
 	
 	ADDQ $4, R9
@@ -232,7 +233,7 @@ scalar_loop:
 	JLE check_complete
 	
 	MOVBLZX (DI)(R9*1), AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA check_complete
 	
@@ -247,7 +248,8 @@ scalar_loop:
 	// Check max value
 	CMPQ R8, $32
 	JE check_scalar_32
-	CMPQ R10, $0x7FFFFFFFFFFFFFFF
+	MOVQ $0x7FFFFFFFFFFFFFFF, BX
+	CMPQ R10, BX
 	JA return_false
 	JMP continue_scalar
 	

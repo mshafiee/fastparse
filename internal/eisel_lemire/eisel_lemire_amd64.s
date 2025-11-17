@@ -62,9 +62,9 @@ TEXT ·tryParseAsm(SB), NOSPLIT, $0-49
 	MOVQ BX, AX                 // AX = mantissa (normalized)
 	MOVQ BX, SI                 // SI = mantissa (save for wider approx check)
 	MULQ R10                    // RDX:RAX = mantissa * pow10TableHigh[idx]
-	// RAX = xLo, RDX = xHi
-	MOVQ RAX, R11               // R11 = xLo
-	MOVQ RDX, R12               // R12 = xHi
+	// Result: xLo in RAX, xHi in RDX
+	MOVQ AX, R11                // R11 = xLo
+	MOVQ DX, R12                // R12 = xHi
 	
 	// Wider Approximation: check if xHi & 0x1FF == 0x1FF && xLo + mantissa < mantissa
 	MOVQ R12, AX
@@ -82,11 +82,11 @@ TEXT ·tryParseAsm(SB), NOSPLIT, $0-49
 	
 	MOVQ SI, AX                 // AX = mantissa
 	MULQ R10                    // RDX:RAX = mantissa * pow10TableLow[idx]
-	// RAX = yLo, RDX = yHi
-	MOVQ RAX, R13               // R13 = yLo (save for second ambiguity check)
+	// Result: yLo in RAX, yHi in RDX
+	MOVQ AX, R13                // R13 = yLo (save for second ambiguity check)
 	
 	// Merge: mergedLo = xLo + yHi, mergedHi = xHi (with carry)
-	ADDQ RDX, R11               // R11 = mergedLo = xLo + yHi
+	ADDQ DX, R11                // R11 = mergedLo = xLo + yHi
 	JNC no_merge_carry
 	INCQ R12                    // mergedHi++ if carry
 no_merge_carry:

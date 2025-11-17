@@ -76,7 +76,7 @@ start_parse:
 avx512_loop:
 	MOVQ R12, CX
 	CMPQ CX, $16
-	JL process_8
+	JL process_8_digits
 	
 	// Load 16 bytes
 	VMOVDQU8 (DI)(R9*1), X2  // X2 = 16 bytes from string
@@ -93,12 +93,12 @@ avx512_loop:
 	KMOVW K1, AX
 	NOTL AX                  // Invert to get valid mask
 	ANDL $0xFFFF, AX
-	JZ process_8             // No valid digits, fall back
+	JZ process_8_digits             // No valid digits, fall back
 	
 	// Count trailing valid digits using BSF
 	BSFL AX, CX              // CX = position of first invalid digit
 	TESTL CX, CX
-	JZ process_8             // First digit invalid, use scalar
+	JZ process_8_digits             // First digit invalid, use scalar
 	
 	// Process CX valid digits
 	CMPQ CX, $8
@@ -257,12 +257,12 @@ process_4:
 	// Quick range check
 	MOVL BX, CX
 	MOVL $0x0A0A0A0A, DX
-	MOVL CX, R13D
-	XORL DX, R13D
-	MOVL R13D, R14D
-	SUBL DX, R14D
-	ANDL CX, R14D
-	TESTL R14D, R14D
+	MOVL CX, R13
+	XORL DX, R13
+	MOVL R13, R14
+	SUBL DX, R14
+	ANDL CX, R14
+	TESTL R14, R14
 	JNZ scalar_loop
 	
 	// Extract 4 digits
@@ -299,7 +299,7 @@ scalar_loop:
 	JLE check_complete
 	
 	MOVBLZX (DI)(R9*1), AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA check_complete
 	
@@ -357,7 +357,7 @@ check_if_zero_valid:
 	JNE return_false
 	// Could be "+0" or "-0"
 	MOVBLZX 1(DI), AX
-	CMPB AX, CHAR_0
+	CMPB AX, $CHAR_ZERO
 	JE return_result
 	
 return_false:

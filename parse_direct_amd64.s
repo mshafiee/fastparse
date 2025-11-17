@@ -47,7 +47,7 @@ check_first_digit:
 	
 	// Must start with digit
 	MOVBLZX (DI)(R8*1), AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA return_false
 	
@@ -60,7 +60,7 @@ parse_int_loop:
 	
 	// Check if digit
 	MOVQ CX, AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA not_int_digit
 	
@@ -89,7 +89,7 @@ int_only_fast_path:
 	JZ store_result
 	
 	// Negate
-	MOVSD $CONST_NEG_ZERO(SB), X1
+	MOVSD CONST_NEG_ZERO<>(SB), X1
 	XORPD X1, X0
 	JMP store_result
 	

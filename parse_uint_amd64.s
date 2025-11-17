@@ -89,7 +89,7 @@ check_hex_prefix:
 	CMPQ R10, SI
 	JGE parse_digits
 	MOVBLZX (DI)(R10*1), AX
-	CMPB AX, CHAR_0
+	CMPB AX, $CHAR_ZERO
 	JNE parse_digits
 	
 	// Have '0', check for 'x' or 'X'
@@ -131,7 +131,7 @@ digit_loop:
 parse_decimal_digit:
 	// Check if '0'-'9'
 	MOVQ CX, AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JA return_false  // Not a digit, can't handle it - fall back
 	JMP digit_valid
@@ -139,7 +139,7 @@ parse_decimal_digit:
 parse_hex_digit:
 	// Check if '0'-'9'
 	MOVQ CX, AX
-	SUBB CHAR_0, AX
+	SUBB $CHAR_ZERO, AX
 	CMPB AX, $9
 	JBE digit_valid
 	
