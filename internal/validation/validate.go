@@ -11,7 +11,7 @@ func HasComplexChars(s string) bool {
 	if len(s) == 0 {
 		return false
 	}
-	
+
 	// Check first character for special values (done in all implementations)
 	switch s[0] {
 	case 'i', 'I', 'n', 'N':
@@ -22,8 +22,7 @@ func HasComplexChars(s string) bool {
 			return true
 		}
 	}
-	
+
 	// Use architecture-specific SIMD scan for underscores
 	return hasComplexCharsImpl(s)
 }
-

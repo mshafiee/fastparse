@@ -7,9 +7,10 @@ package fastparse_test
 
 import (
 	"runtime"
-	"github.com/mshafiee/fastparse"
 	"strings"
 	"testing"
+
+	"github.com/mshafiee/fastparse"
 )
 
 var (

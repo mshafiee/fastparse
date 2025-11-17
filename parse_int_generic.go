@@ -60,17 +60,17 @@ func parseIntGeneric(s string, bitSize int) (int64, error) {
 			digit := uint64(ch - '0')
 			// Check for overflow before multiplying
 			if value > maxValue/10 {
-			// Overflow - return max/min value with error (matching strconv behavior)
-			if sign < 0 {
-				if bitSize == 64 {
-					return -9223372036854775808, rangeError("ParseInt", s)
+				// Overflow - return max/min value with error (matching strconv behavior)
+				if sign < 0 {
+					if bitSize == 64 {
+						return -9223372036854775808, rangeError("ParseInt", s)
+					}
+					return -2147483648, rangeError("ParseInt", s)
 				}
-				return -2147483648, rangeError("ParseInt", s)
-			}
-			if bitSize == 64 {
-				return 9223372036854775807, rangeError("ParseInt", s)
-			}
-			return 2147483647, rangeError("ParseInt", s)
+				if bitSize == 64 {
+					return 9223372036854775807, rangeError("ParseInt", s)
+				}
+				return 2147483647, rangeError("ParseInt", s)
 			}
 			newValue := value*10 + digit
 			if newValue > maxValue {
@@ -130,4 +130,3 @@ func parseIntGeneric(s string, bitSize int) (int64, error) {
 		return 0, syntaxError("ParseInt", s)
 	}
 }
-

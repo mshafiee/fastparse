@@ -14,7 +14,7 @@ func isGraphicOptimized(r rune) bool {
 		// 0x20 <= r <= 0x7E
 		return r >= 0x20 && r <= 0x7E
 	}
-	
+
 	// Fast path for common Latin-1 range
 	if r <= 0xFF {
 		if r >= 0xA1 {
@@ -23,13 +23,12 @@ func isGraphicOptimized(r rune) bool {
 		// Check if it's 0xA0 (non-breaking space)
 		return r == 0xA0
 	}
-	
+
 	// Check if printable first
 	if isPrintOptimized(r) {
 		return true
 	}
-	
+
 	// Check graphic list
 	return isInGraphicList(r)
 }
-

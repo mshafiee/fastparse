@@ -9,6 +9,7 @@ package conversion
 import "golang.org/x/sys/cpu"
 
 // Assembly implementations
+//
 //go:noescape
 func convertDecimalExactAsm(mantissa uint64, exp int, neg bool, pow10Table []float64) (float64, bool)
 
@@ -35,4 +36,3 @@ func convertDecimalExtendedImpl(mantissa uint64, exp int, neg bool, pow10Table [
 	}
 	return convertDecimalExtendedScalar(mantissa, exp, neg, pow10Table)
 }
-

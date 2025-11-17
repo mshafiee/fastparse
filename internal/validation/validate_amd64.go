@@ -14,6 +14,7 @@ import "golang.org/x/sys/cpu"
 func hasUnderscoreAVX2(s string) bool
 
 // hasUnderscoreSSE2 scans for underscore using SSE2 (16 bytes at a time)
+//
 //go:noescape
 func hasUnderscoreSSE2(s string) bool
 
@@ -30,7 +31,7 @@ func hasComplexCharsImpl(s string) bool {
 	if len(s) < 16 {
 		return hasUnderscoreScalar(s)
 	}
-	
+
 	// Use AVX2 if available, otherwise SSE2
 	if useAVX2 {
 		return hasUnderscoreAVX2(s)
@@ -47,4 +48,3 @@ func hasUnderscoreScalar(s string) bool {
 	}
 	return false
 }
-

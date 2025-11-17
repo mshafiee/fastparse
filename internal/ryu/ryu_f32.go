@@ -12,9 +12,9 @@ import (
 // Ryū algorithm for float32 to decimal conversion
 
 const (
-	FLOAT_MANTISSA_BITS = 23
-	FLOAT_EXPONENT_BITS = 8
-	FLOAT_BIAS          = 127
+	FLOAT_MANTISSA_BITS     = 23
+	FLOAT_EXPONENT_BITS     = 8
+	FLOAT_BIAS              = 127
 	FLOAT_POW5_INV_BITCOUNT = 59
 	FLOAT_POW5_BITCOUNT     = 61
 )
@@ -72,61 +72,61 @@ var pow5Split_f32 = [47][2]uint64{
 }
 
 var pow5InvSplit_f32 = [55][2]uint64{
-	{0x1, 0x0},                                          // ceil(2^59 / 5^0)
-	{0x0, 0xcccccccccccccccd},                          // ceil(2^60 / 5^1)
-	{0x0, 0xa3d70a3d70a3d70b},                          // ceil(2^61 / 5^2)
-	{0x0, 0x83126e978d4fdf3c},                          // ceil(2^62 / 5^3)
-	{0x0, 0xd1b71758e219652c},                          // ceil(2^63 / 5^4)
-	{0x0, 0xa7c5ac471b478424},                          // ceil(2^64 / 5^5)
-	{0x0, 0x8637bd05af6c69b6},                          // ceil(2^65 / 5^6)
-	{0x0, 0xd6bf94d5e57a42bd},                          // ceil(2^66 / 5^7)
-	{0x0, 0xabcc77118461cefd},                          // ceil(2^67 / 5^8)
-	{0x0, 0x89705f4136b4a598},                          // ceil(2^68 / 5^9)
-	{0x0, 0xdbe6fecebdedd5bf},                          // ceil(2^69 / 5^10)
-	{0x0, 0xafebff0bcb24aaff},                          // ceil(2^70 / 5^11)
-	{0x0, 0x8cbccc096f5088cc},                          // ceil(2^71 / 5^12)
-	{0x0, 0xe12e13424bb40e14},                          // ceil(2^72 / 5^13)
-	{0x0, 0xb424dc35095cd810},                          // ceil(2^73 / 5^14)
-	{0x0, 0x901d7cf73ab0acda},                          // ceil(2^74 / 5^15)
-	{0x0, 0xe69594bec44de15c},                          // ceil(2^75 / 5^16)
-	{0x0, 0xb877aa3236a4b44a},                          // ceil(2^76 / 5^17)
-	{0x0, 0x9392ee8e921d5d08},                          // ceil(2^77 / 5^18)
-	{0x0, 0xec1e4a7db69561a6},                          // ceil(2^78 / 5^19)
-	{0x0, 0xbce5086492111aeb},                          // ceil(2^79 / 5^20)
-	{0x0, 0x971da05074da7bef},                          // ceil(2^80 / 5^21)
-	{0x0, 0xf1c90080baf72cb2},                          // ceil(2^81 / 5^22)
-	{0x0, 0xc16d9a0095928a28},                          // ceil(2^82 / 5^23)
-	{0x0, 0x9abe14cd44753b53},                          // ceil(2^83 / 5^24)
-	{0x0, 0xf79687aed3eec552},                          // ceil(2^84 / 5^25)
-	{0x0, 0xc612062576589ddb},                          // ceil(2^85 / 5^26)
-	{0x0, 0x9e74d1b791e07e49},                          // ceil(2^86 / 5^27)
-	{0x0, 0xfd87b5f28300ca0e},                          // ceil(2^87 / 5^28)
-	{0x0, 0xcad2f7f5359a3b3f},                          // ceil(2^88 / 5^29)
-	{0x0, 0xa2425ff75e14fc32},                          // ceil(2^89 / 5^30)
-	{0x1, 0x81ceb32c4b43fcf5},                          // ceil(2^90 / 5^31)
-	{0x1, 0x3d7f783b4c0a6f1},                           // ceil(2^91 / 5^32)
-	{0x0, 0xf6c69a72a3989f5c},                          // ceil(2^92 / 5^33)
-	{0x0, 0xc5371912364ce306},                          // ceil(2^93 / 5^34)
-	{0x0, 0x9d9ba7832936edc1},                          // ceil(2^94 / 5^35)
-	{0x0, 0xfb9dc700f77e2a9a},                          // ceil(2^95 / 5^36)
-	{0x0, 0xc97e3f65c9e30c89},                          // ceil(2^96 / 5^37)
-	{0x0, 0xa0ff8ae7a7d2f5a7},                          // ceil(2^97 / 5^38)
-	{0x1, 0x14f6ec8507bf0a99},                          // ceil(2^98 / 5^39)
-	{0x0, 0xfdcb4fa002162a64},                          // ceil(2^99 / 5^40)
-	{0x0, 0xcb090c8001bd82a},                           // ceil(2^100 / 5^41)
-	{0x0, 0xa2db947e18f9e857},                          // ceil(2^101 / 5^42)
-	{0x1, 0x87f421e5c7e76c8},                           // ceil(2^102 / 5^43)
-	{0x1, 0x19f92a4b24b760a},                           // ceil(2^103 / 5^44)
-	{0x0, 0xe94c2ebcc01b28f5},                          // ceil(2^104 / 5^45)
-	{0x0, 0xba4a18ee21a0b98f},                          // ceil(2^105 / 5^46)
-	{0x0, 0x953e2f4d7e5c3a73},                          // ceil(2^106 / 5^47)
-	{0x0, 0xefb2b6f8372c68f1},                          // ceil(2^107 / 5^48)
-	{0x0, 0xbf5cdba588af8959},                          // ceil(2^108 / 5^49)
-	{0x0, 0x98ee450917088991},                          // ceil(2^109 / 5^50)
-	{0x0, 0xf6494f6cf4ee86ed},                          // ceil(2^110 / 5^51)
-	{0x0, 0xc4ad6e5cfb842f91},                          // ceil(2^111 / 5^52)
-	{0x0, 0x9d2b8cb7c0e6ae74},                          // ceil(2^112 / 5^53)
-	{0x0, 0xfbb8c17967aa9c2e},                          // ceil(2^113 / 5^54)
+	{0x1, 0x0},                // ceil(2^59 / 5^0)
+	{0x0, 0xcccccccccccccccd}, // ceil(2^60 / 5^1)
+	{0x0, 0xa3d70a3d70a3d70b}, // ceil(2^61 / 5^2)
+	{0x0, 0x83126e978d4fdf3c}, // ceil(2^62 / 5^3)
+	{0x0, 0xd1b71758e219652c}, // ceil(2^63 / 5^4)
+	{0x0, 0xa7c5ac471b478424}, // ceil(2^64 / 5^5)
+	{0x0, 0x8637bd05af6c69b6}, // ceil(2^65 / 5^6)
+	{0x0, 0xd6bf94d5e57a42bd}, // ceil(2^66 / 5^7)
+	{0x0, 0xabcc77118461cefd}, // ceil(2^67 / 5^8)
+	{0x0, 0x89705f4136b4a598}, // ceil(2^68 / 5^9)
+	{0x0, 0xdbe6fecebdedd5bf}, // ceil(2^69 / 5^10)
+	{0x0, 0xafebff0bcb24aaff}, // ceil(2^70 / 5^11)
+	{0x0, 0x8cbccc096f5088cc}, // ceil(2^71 / 5^12)
+	{0x0, 0xe12e13424bb40e14}, // ceil(2^72 / 5^13)
+	{0x0, 0xb424dc35095cd810}, // ceil(2^73 / 5^14)
+	{0x0, 0x901d7cf73ab0acda}, // ceil(2^74 / 5^15)
+	{0x0, 0xe69594bec44de15c}, // ceil(2^75 / 5^16)
+	{0x0, 0xb877aa3236a4b44a}, // ceil(2^76 / 5^17)
+	{0x0, 0x9392ee8e921d5d08}, // ceil(2^77 / 5^18)
+	{0x0, 0xec1e4a7db69561a6}, // ceil(2^78 / 5^19)
+	{0x0, 0xbce5086492111aeb}, // ceil(2^79 / 5^20)
+	{0x0, 0x971da05074da7bef}, // ceil(2^80 / 5^21)
+	{0x0, 0xf1c90080baf72cb2}, // ceil(2^81 / 5^22)
+	{0x0, 0xc16d9a0095928a28}, // ceil(2^82 / 5^23)
+	{0x0, 0x9abe14cd44753b53}, // ceil(2^83 / 5^24)
+	{0x0, 0xf79687aed3eec552}, // ceil(2^84 / 5^25)
+	{0x0, 0xc612062576589ddb}, // ceil(2^85 / 5^26)
+	{0x0, 0x9e74d1b791e07e49}, // ceil(2^86 / 5^27)
+	{0x0, 0xfd87b5f28300ca0e}, // ceil(2^87 / 5^28)
+	{0x0, 0xcad2f7f5359a3b3f}, // ceil(2^88 / 5^29)
+	{0x0, 0xa2425ff75e14fc32}, // ceil(2^89 / 5^30)
+	{0x1, 0x81ceb32c4b43fcf5}, // ceil(2^90 / 5^31)
+	{0x1, 0x3d7f783b4c0a6f1},  // ceil(2^91 / 5^32)
+	{0x0, 0xf6c69a72a3989f5c}, // ceil(2^92 / 5^33)
+	{0x0, 0xc5371912364ce306}, // ceil(2^93 / 5^34)
+	{0x0, 0x9d9ba7832936edc1}, // ceil(2^94 / 5^35)
+	{0x0, 0xfb9dc700f77e2a9a}, // ceil(2^95 / 5^36)
+	{0x0, 0xc97e3f65c9e30c89}, // ceil(2^96 / 5^37)
+	{0x0, 0xa0ff8ae7a7d2f5a7}, // ceil(2^97 / 5^38)
+	{0x1, 0x14f6ec8507bf0a99}, // ceil(2^98 / 5^39)
+	{0x0, 0xfdcb4fa002162a64}, // ceil(2^99 / 5^40)
+	{0x0, 0xcb090c8001bd82a},  // ceil(2^100 / 5^41)
+	{0x0, 0xa2db947e18f9e857}, // ceil(2^101 / 5^42)
+	{0x1, 0x87f421e5c7e76c8},  // ceil(2^102 / 5^43)
+	{0x1, 0x19f92a4b24b760a},  // ceil(2^103 / 5^44)
+	{0x0, 0xe94c2ebcc01b28f5}, // ceil(2^104 / 5^45)
+	{0x0, 0xba4a18ee21a0b98f}, // ceil(2^105 / 5^46)
+	{0x0, 0x953e2f4d7e5c3a73}, // ceil(2^106 / 5^47)
+	{0x0, 0xefb2b6f8372c68f1}, // ceil(2^107 / 5^48)
+	{0x0, 0xbf5cdba588af8959}, // ceil(2^108 / 5^49)
+	{0x0, 0x98ee450917088991}, // ceil(2^109 / 5^50)
+	{0x0, 0xf6494f6cf4ee86ed}, // ceil(2^110 / 5^51)
+	{0x0, 0xc4ad6e5cfb842f91}, // ceil(2^111 / 5^52)
+	{0x0, 0x9d2b8cb7c0e6ae74}, // ceil(2^112 / 5^53)
+	{0x0, 0xfbb8c17967aa9c2e}, // ceil(2^113 / 5^54)
 }
 
 // FormatFloat32 converts a float32 to its shortest decimal representation.
@@ -156,7 +156,7 @@ func FormatFloat32(f float32) ([]byte, int) {
 
 	var e2 int32
 	var m2 uint32
-	
+
 	if ieeeExponent == 0 {
 		// Subnormal number
 		e2 = 1 - FLOAT_BIAS - FLOAT_MANTISSA_BITS
@@ -169,7 +169,7 @@ func FormatFloat32(f float32) ([]byte, int) {
 
 	// Convert to decimal using Ryū algorithm
 	output, decimalExponent := f2dGeneral(m2, e2)
-	
+
 	// Add sign if needed
 	if ieeeSign {
 		result := make([]byte, len(output)+1)
@@ -177,37 +177,37 @@ func FormatFloat32(f float32) ([]byte, int) {
 		copy(result[1:], output)
 		return result, decimalExponent
 	}
-	
+
 	return output, decimalExponent
 }
 
 // f2dGeneral implements the Ryū algorithm for float32
 func f2dGeneral(m2 uint32, e2 int32) ([]byte, int) {
 	acceptBounds := (m2 & 1) == 0
-	
+
 	mv := uint64(m2) << 2
 	mmShift := uint32(1)
-	if m2 != (1 << FLOAT_MANTISSA_BITS) || e2 <= -(FLOAT_BIAS + FLOAT_MANTISSA_BITS + 2) {
+	if m2 != (1<<FLOAT_MANTISSA_BITS) || e2 <= -(FLOAT_BIAS+FLOAT_MANTISSA_BITS+2) {
 		mmShift = 0
 	}
-	
+
 	var e10 int32
 	var vr, vp, vm uint64
 	var removed int32
-	
+
 	if e2 >= 0 {
 		q := log10Pow2(e2)
 		e10 = q
 		k := int32(FLOAT_POW5_INV_BITCOUNT) + pow5bits(q) - 1
 		i := -e2 + q + k
-		
+
 		// Use float32 tables with bounds check
 		if q >= 0 && q < int32(len(pow5InvSplit_f32)) {
 			mul := pow5InvSplit_f32[q]
 			vr = mulShift32(uint32(mv), mul, uint(i))
 			vp = mulShift32(uint32(mv+2), mul, uint(i))
 			vm = mulShift32(uint32(mv-uint64(mmShift)-1), mul, uint(i))
-			
+
 			if q > 0 && q-1 >= 0 && (vp-1)/10 <= vm/10 {
 				l := int32(FLOAT_POW5_INV_BITCOUNT) + pow5bits(q-1) - 1
 				lastRemovedDigit := uint8(mulShift32(uint32(mv), pow5InvSplit_f32[q-1], uint(-e2+q-1+l)) % 10)
@@ -223,14 +223,14 @@ func f2dGeneral(m2 uint32, e2 int32) ([]byte, int) {
 		i := -e2 - q
 		k := pow5bits(i) - int32(FLOAT_POW5_BITCOUNT)
 		j := q - k
-		
+
 		// Use float32 tables with bounds check
 		if i >= 0 && i < int32(len(pow5Split_f32)) {
 			mul := pow5Split_f32[i]
 			vr = mulShift32(uint32(mv), mul, uint(j))
 			vp = mulShift32(uint32(mv+2), mul, uint(j))
 			vm = mulShift32(uint32(mv-uint64(mmShift)-1), mul, uint(j))
-			
+
 			if q != 0 && i+1 < int32(len(pow5Split_f32)) && (vp-1)/10 <= vm/10 {
 				j2 := q - 1 - (pow5bits(i+1) - int32(FLOAT_POW5_BITCOUNT))
 				lastRemovedDigit := uint8(mulShift32(uint32(mv), pow5Split_f32[i+1], uint(j2)) % 10)
@@ -241,11 +241,11 @@ func f2dGeneral(m2 uint32, e2 int32) ([]byte, int) {
 			return formatMantissa64(uint64(m2)), int(e2)
 		}
 	}
-	
+
 	// Remove trailing zeros and round
 	var output uint64
 	var lastRemovedDigit uint8
-	
+
 	if acceptBounds {
 		for vp/10 > vm/10 {
 			lastRemovedDigit = uint8(vr % 10)
@@ -276,7 +276,7 @@ func f2dGeneral(m2 uint32, e2 int32) ([]byte, int) {
 			output++
 		}
 	}
-	
+
 	return formatMantissa64(output), int(e10) + int(removed)
 }
 
@@ -284,13 +284,13 @@ func f2dGeneral(m2 uint32, e2 int32) ([]byte, int) {
 func mulShift32(m uint32, mul [2]uint64, shift uint) uint64 {
 	// Convert m to uint64 for multiplication
 	m64 := uint64(m)
-	
+
 	// m * mul[1] (low part)
 	hi1, lo1 := bits.Mul64(m64, mul[1])
-	
+
 	// m * mul[0] (high part)
 	hi2, lo2 := bits.Mul64(m64, mul[0])
-	
+
 	// Combine results
 	lo := lo1
 	mid := hi1 + lo2
@@ -298,7 +298,7 @@ func mulShift32(m uint32, mul [2]uint64, shift uint) uint64 {
 	if mid < lo2 {
 		hi++
 	}
-	
+
 	// Shift right
 	if shift >= 128 {
 		return hi >> (shift - 128)

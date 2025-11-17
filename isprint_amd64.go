@@ -19,7 +19,7 @@ func isPrintOptimized(r rune) bool {
 		// r >= 0x20 is equivalent to r - 0x20 >= 0 (no underflow)
 		return r >= 0x20
 	}
-	
+
 	// Fast path for Latin-1 range using lookup table
 	// 0xA1 <= r <= 0xFF (except 0xAD)
 	if r <= 0xFF {
@@ -28,7 +28,7 @@ func isPrintOptimized(r rune) bool {
 		}
 		return false
 	}
-	
+
 	// Use fallback for higher Unicode ranges (assembly has bugs)
 	return isPrintFallback(r)
 }
@@ -52,7 +52,7 @@ func isPrintFallback(r rune) bool {
 		_, found := bsearch(isNotPrint16, rr)
 		return !found
 	}
-	
+
 	// Check 32-bit table for r >= 0x10000
 	// For r in [0x10000, 0x20000), also check isNotPrint32
 	i, _ := bsearch(isPrint32, uint32(r))
@@ -63,14 +63,13 @@ func isPrintFallback(r rune) bool {
 	if uint32(r) < isPrint32[i&^1] || isPrint32[i|1] < uint32(r) {
 		return false
 	}
-	
+
 	// For r in [0x10000, 0x20000), also check the not-print list
 	if r < 0x20000 {
 		rr := uint16(r - 0x10000)
 		_, found := bsearch(isNotPrint32, rr)
 		return !found
 	}
-	
+
 	return true
 }
-

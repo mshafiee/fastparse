@@ -6,9 +6,10 @@
 package fastparse_test
 
 import (
-	. "github.com/mshafiee/fastparse"
 	"math"
 	"testing"
+
+	. "github.com/mshafiee/fastparse"
 )
 
 func TestStdlibMulByLog2Log10(t *testing.T) {

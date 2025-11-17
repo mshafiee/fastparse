@@ -6,8 +6,9 @@
 package fastparse_test
 
 import (
-	. "github.com/mshafiee/fastparse"
 	"testing"
+
+	. "github.com/mshafiee/fastparse"
 )
 
 func TestStdlibFormatComplex(t *testing.T) {

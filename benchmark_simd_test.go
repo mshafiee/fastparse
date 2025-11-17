@@ -27,7 +27,7 @@ func BenchmarkParseFloatSIMD(b *testing.B) {
 		{"Scientific", "1.23e10"},
 		{"Scientific_Long", "1.234567890123456789e100"},
 	}
-	
+
 	for _, tc := range testCases {
 		b.Run("FastParse_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
@@ -35,7 +35,7 @@ func BenchmarkParseFloatSIMD(b *testing.B) {
 				_, _ = ParseFloat(tc.s, 64)
 			}
 		})
-		
+
 		b.Run("Strconv_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
 			for i := 0; i < b.N; i++ {
@@ -57,7 +57,7 @@ func BenchmarkParseIntSIMD(b *testing.B) {
 		{"MaxInt64_19digits", "9223372036854775807"},
 		{"Negative_Long", "-1234567890123456"},
 	}
-	
+
 	for _, tc := range testCases {
 		b.Run("FastParse_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
@@ -65,7 +65,7 @@ func BenchmarkParseIntSIMD(b *testing.B) {
 				_, _ = ParseInt(tc.s, 10, 64)
 			}
 		})
-		
+
 		b.Run("Strconv_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
 			for i := 0; i < b.N; i++ {
@@ -86,7 +86,7 @@ func BenchmarkParseUintSIMD(b *testing.B) {
 		{"Long_16digits", "1234567890123456"},
 		{"MaxUint64_20digits", "18446744073709551615"},
 	}
-	
+
 	for _, tc := range testCases {
 		b.Run("FastParse_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
@@ -94,7 +94,7 @@ func BenchmarkParseUintSIMD(b *testing.B) {
 				_, _ = ParseUint(tc.s, 10, 64)
 			}
 		})
-		
+
 		b.Run("Strconv_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
 			for i := 0; i < b.N; i++ {
@@ -118,7 +118,7 @@ func BenchmarkQuoteSIMD(b *testing.B) {
 		{"WithEscapes", "hello \"world\" with\nescapes"},
 		{"NonASCII", "hello 世界 мир"},
 	}
-	
+
 	for _, tc := range testCases {
 		b.Run("FastParse_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
@@ -126,7 +126,7 @@ func BenchmarkQuoteSIMD(b *testing.B) {
 				_ = Quote(tc.s)
 			}
 		})
-		
+
 		b.Run("Strconv_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
 			for i := 0; i < b.N; i++ {
@@ -143,7 +143,7 @@ func BenchmarkCPUDetection(b *testing.B) {
 			_ = HasAVX2()
 		}
 	})
-	
+
 	b.Run("HasAVX512", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			_ = HasAVX512()
@@ -162,7 +162,7 @@ func BenchmarkFloat32Rounding(b *testing.B) {
 		{"Small", "1.23e-10"},
 		{"Large", "1.23e30"},
 	}
-	
+
 	for _, tc := range testCases {
 		b.Run("FastParse_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
@@ -170,7 +170,7 @@ func BenchmarkFloat32Rounding(b *testing.B) {
 				_, _ = ParseFloat(tc.s, 32)
 			}
 		})
-		
+
 		b.Run("Strconv_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
 			for i := 0; i < b.N; i++ {
@@ -194,7 +194,7 @@ func BenchmarkFormatIntSIMD(b *testing.B) {
 		{"Base2_Small", 255, 2},
 		{"Base8_Small", 0777, 8},
 	}
-	
+
 	for _, tc := range testCases {
 		b.Run("FastParse_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
@@ -202,7 +202,7 @@ func BenchmarkFormatIntSIMD(b *testing.B) {
 				_ = FormatInt(tc.value, tc.base)
 			}
 		})
-		
+
 		b.Run("Strconv_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
 			for i := 0; i < b.N; i++ {
@@ -215,7 +215,7 @@ func BenchmarkFormatIntSIMD(b *testing.B) {
 // BenchmarkAppendIntSIMD benchmarks integer appending
 func BenchmarkAppendIntSIMD(b *testing.B) {
 	dst := make([]byte, 0, 100)
-	
+
 	testCases := []struct {
 		name  string
 		value int64
@@ -225,7 +225,7 @@ func BenchmarkAppendIntSIMD(b *testing.B) {
 		{"Base10_Large", 1234567890123456, 10},
 		{"Base16_Large", 0x7BCDEF0123456789, 16},
 	}
-	
+
 	for _, tc := range testCases {
 		b.Run("FastParse_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
@@ -234,7 +234,7 @@ func BenchmarkAppendIntSIMD(b *testing.B) {
 				dst = AppendInt(dst, tc.value, tc.base)
 			}
 		})
-		
+
 		b.Run("Strconv_"+tc.name, func(b *testing.B) {
 			b.ReportAllocs()
 			for i := 0; i < b.N; i++ {
@@ -251,4 +251,3 @@ func init() {
 		fmt.Printf("CPU Features: AVX2=%v, AVX-512=%v\n", HasAVX2(), HasAVX512())
 	}
 }
-

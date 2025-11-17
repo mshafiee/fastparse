@@ -14,7 +14,7 @@ func formatUint64Base10(u uint64) string {
 	// Fast path: use a fixed-size buffer that can hold any uint64 (max 20 digits)
 	var buf [20]byte
 	i := len(buf)
-	
+
 	// Generate digits in reverse order
 	for u >= 10 {
 		q := u / 10
@@ -25,7 +25,7 @@ func formatUint64Base10(u uint64) string {
 	// Handle the last digit
 	i--
 	buf[i] = byte('0' + u)
-	
+
 	return string(buf[i:])
 }
 
@@ -35,21 +35,21 @@ func formatUint64Base16(u uint64) string {
 	if u == 0 {
 		return "0"
 	}
-	
+
 	// Find the position of the highest bit
 	nbits := 64 - bits.LeadingZeros64(u)
 	// Number of hex digits = ceiling(nbits / 4)
 	ndigits := (nbits + 3) / 4
-	
+
 	var buf [16]byte // max 16 hex digits for uint64
 	i := len(buf)
-	
+
 	for u > 0 {
 		buf[i-1] = digits[u&0xF]
 		u >>= 4
 		i--
 	}
-	
+
 	return string(buf[len(buf)-ndigits:])
 }
 
@@ -58,21 +58,21 @@ func formatUint64Base8(u uint64) string {
 	if u == 0 {
 		return "0"
 	}
-	
+
 	// Find the position of the highest bit
 	nbits := 64 - bits.LeadingZeros64(u)
 	// Number of octal digits = ceiling(nbits / 3)
 	ndigits := (nbits + 2) / 3
-	
+
 	var buf [22]byte // max 22 octal digits for uint64
 	i := len(buf)
-	
+
 	for u > 0 {
 		buf[i-1] = byte('0' + (u & 0x7))
 		u >>= 3
 		i--
 	}
-	
+
 	return string(buf[len(buf)-ndigits:])
 }
 
@@ -81,19 +81,19 @@ func formatUint64Base2(u uint64) string {
 	if u == 0 {
 		return "0"
 	}
-	
+
 	// Find the position of the highest bit
 	ndigits := 64 - bits.LeadingZeros64(u)
-	
+
 	var buf [64]byte // max 64 binary digits for uint64
 	i := len(buf)
-	
+
 	for u > 0 {
 		buf[i-1] = byte('0' + (u & 1))
 		u >>= 1
 		i--
 	}
-	
+
 	return string(buf[len(buf)-ndigits:])
 }
 
@@ -102,7 +102,7 @@ func formatUint64Generic(u uint64, base int) string {
 	// Maximum digits needed for any base >= 2
 	var buf [64]byte
 	i := len(buf)
-	
+
 	b := uint64(base)
 	for u >= b {
 		i--
@@ -111,7 +111,7 @@ func formatUint64Generic(u uint64, base int) string {
 	}
 	i--
 	buf[i] = digits[u]
-	
+
 	return string(buf[i:])
 }
 
@@ -119,7 +119,7 @@ func formatUint64Generic(u uint64, base int) string {
 func appendUint64Base10(dst []byte, u uint64) []byte {
 	var buf [20]byte
 	i := len(buf)
-	
+
 	for u >= 10 {
 		q := u / 10
 		i--
@@ -128,7 +128,7 @@ func appendUint64Base10(dst []byte, u uint64) []byte {
 	}
 	i--
 	buf[i] = byte('0' + u)
-	
+
 	return append(dst, buf[i:]...)
 }
 
@@ -137,19 +137,19 @@ func appendUint64Base16(dst []byte, u uint64) []byte {
 	if u == 0 {
 		return append(dst, '0')
 	}
-	
+
 	nbits := 64 - bits.LeadingZeros64(u)
 	ndigits := (nbits + 3) / 4
-	
+
 	var buf [16]byte
 	i := len(buf)
-	
+
 	for u > 0 {
 		buf[i-1] = digits[u&0xF]
 		u >>= 4
 		i--
 	}
-	
+
 	return append(dst, buf[len(buf)-ndigits:]...)
 }
 
@@ -158,19 +158,19 @@ func appendUint64Base8(dst []byte, u uint64) []byte {
 	if u == 0 {
 		return append(dst, '0')
 	}
-	
+
 	nbits := 64 - bits.LeadingZeros64(u)
 	ndigits := (nbits + 2) / 3
-	
+
 	var buf [22]byte
 	i := len(buf)
-	
+
 	for u > 0 {
 		buf[i-1] = byte('0' + (u & 0x7))
 		u >>= 3
 		i--
 	}
-	
+
 	return append(dst, buf[len(buf)-ndigits:]...)
 }
 
@@ -179,18 +179,18 @@ func appendUint64Base2(dst []byte, u uint64) []byte {
 	if u == 0 {
 		return append(dst, '0')
 	}
-	
+
 	ndigits := 64 - bits.LeadingZeros64(u)
-	
+
 	var buf [64]byte
 	i := len(buf)
-	
+
 	for u > 0 {
 		buf[i-1] = byte('0' + (u & 1))
 		u >>= 1
 		i--
 	}
-	
+
 	return append(dst, buf[len(buf)-ndigits:]...)
 }
 
@@ -198,7 +198,7 @@ func appendUint64Base2(dst []byte, u uint64) []byte {
 func appendUint64Generic(dst []byte, u uint64, base int) []byte {
 	var buf [64]byte
 	i := len(buf)
-	
+
 	b := uint64(base)
 	for u >= b {
 		i--
@@ -207,7 +207,6 @@ func appendUint64Generic(dst []byte, u uint64, base int) []byte {
 	}
 	i--
 	buf[i] = digits[u]
-	
+
 	return append(dst, buf[i:]...)
 }
-

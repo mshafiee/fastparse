@@ -13,9 +13,9 @@ import (
 // Based on the paper "Ryū: fast float-to-string conversion" by Ulf Adams
 
 const (
-	DOUBLE_MANTISSA_BITS = 52
-	DOUBLE_EXPONENT_BITS = 11
-	DOUBLE_BIAS          = 1023
+	DOUBLE_MANTISSA_BITS            = 52
+	DOUBLE_EXPONENT_BITS            = 11
+	DOUBLE_BIAS                     = 1023
 	DOUBLE_POW5_INV_BITCOUNT_ACTUAL = 122
 	DOUBLE_POW5_BITCOUNT_ACTUAL     = 121
 )
@@ -48,7 +48,7 @@ func FormatFloat64(f float64) ([]byte, int) {
 
 	var e2 int32
 	var m2 uint64
-	
+
 	if ieeeExponent == 0 {
 		// Subnormal number
 		e2 = 1 - DOUBLE_BIAS - DOUBLE_MANTISSA_BITS
@@ -61,7 +61,7 @@ func FormatFloat64(f float64) ([]byte, int) {
 
 	// Convert to decimal using Ryū algorithm
 	output, decimalExponent := d2dGeneral(m2, e2)
-	
+
 	// Add sign if needed
 	if ieeeSign {
 		result := make([]byte, len(output)+1)
@@ -69,7 +69,7 @@ func FormatFloat64(f float64) ([]byte, int) {
 		copy(result[1:], output)
 		return result, decimalExponent
 	}
-	
+
 	return output, decimalExponent
 }
 
@@ -77,37 +77,37 @@ func FormatFloat64(f float64) ([]byte, int) {
 func d2dGeneral(m2 uint64, e2 int32) ([]byte, int) {
 	// Step 1: Determine the interval of valid decimal representations
 	acceptBounds := (m2 & 1) == 0 // IEEE "round to even" rule
-	
+
 	// Calculate boundaries
 	mv := m2 << 2
 	mmShift := uint64(1)
-	if m2 != (1 << DOUBLE_MANTISSA_BITS) || e2 <= -(DOUBLE_BIAS + DOUBLE_MANTISSA_BITS + 2) {
+	if m2 != (1<<DOUBLE_MANTISSA_BITS) || e2 <= -(DOUBLE_BIAS+DOUBLE_MANTISSA_BITS+2) {
 		mmShift = 0
 	}
-	
+
 	// Step 2: Determine the decimal exponent
 	var e10 int32
 	var vr, vp, vm uint64
 	var removed int32
-	
+
 	if e2 >= 0 {
 		// Positive binary exponent
 		q := log10Pow2(e2)
 		e10 = q
 		k := int32(DOUBLE_POW5_INV_BITCOUNT_ACTUAL) + pow5bits(q) - 1
 		i := -e2 + q + k
-		
+
 		// Bounds check for table access
 		if q < 0 || q >= DOUBLE_POW5_INV_TABLE_SIZE {
 			// Fall back to simple conversion for out of range
 			return formatMantissa64(m2), int(e2)
 		}
-		
+
 		mul := pow5InvSplit[q]
 		vr = mulShift(mv, mul, uint(i))
 		vp = mulShift(mv+2, mul, uint(i))
 		vm = mulShift(mv-1-mmShift, mul, uint(i))
-		
+
 		if q != 0 && q > 0 && (vp-1)/10 <= vm/10 {
 			// Rounding might affect result
 			l := int32(DOUBLE_POW5_INV_BITCOUNT_ACTUAL) + pow5bits(q-1) - 1
@@ -121,29 +121,29 @@ func d2dGeneral(m2 uint64, e2 int32) ([]byte, int) {
 		i := -e2 - q
 		k := pow5bits(i) - int32(DOUBLE_POW5_BITCOUNT_ACTUAL)
 		j := q - k
-		
+
 		// Bounds check for table access
 		if i < 0 || i >= DOUBLE_POW5_TABLE_SIZE {
 			// Fall back to simple conversion for out of range
 			return formatMantissa64(m2), int(e2)
 		}
-		
+
 		mul := pow5Split[i]
 		vr = mulShift(mv, mul, uint(j))
 		vp = mulShift(mv+2, mul, uint(j))
 		vm = mulShift(mv-1-mmShift, mul, uint(j))
-		
+
 		if q != 0 && i+1 < DOUBLE_POW5_TABLE_SIZE && (vp-1)/10 <= vm/10 {
 			j2 := q - 1 - (pow5bits(i+1) - int32(DOUBLE_POW5_BITCOUNT_ACTUAL))
 			lastRemovedDigit := uint8(mulShift(mv, pow5Split[i+1], uint(j2)) % 10)
 			removed = int32(lastRemovedDigit)
 		}
 	}
-	
+
 	// Step 3: Find the shortest decimal representation in the interval
 	var output uint64
 	var lastRemovedDigit uint8
-	
+
 	// Remove trailing zeros
 	if acceptBounds {
 		for vp/10 > vm/10 {
@@ -183,7 +183,7 @@ func d2dGeneral(m2 uint64, e2 int32) ([]byte, int) {
 			output++
 		}
 	}
-	
+
 	// Format output
 	return formatMantissa64(output), int(e10) + int(removed)
 }
@@ -192,13 +192,13 @@ func d2dGeneral(m2 uint64, e2 int32) ([]byte, int) {
 func mulShift(m uint64, mul [2]uint64, shift uint) uint64 {
 	// Perform 64x128-bit multiplication
 	// m * (mul[0]:mul[1]) where mul[0] is high 64 bits, mul[1] is low 64 bits
-	
+
 	// m * mul[1] (low part)
 	hi1, lo1 := bits.Mul64(m, mul[1])
-	
+
 	// m * mul[0] (high part)
 	hi2, lo2 := bits.Mul64(m, mul[0])
-	
+
 	// Add the results: (hi2:lo2:0) + (hi1:lo1)
 	lo := lo1
 	mid := hi1 + lo2
@@ -206,7 +206,7 @@ func mulShift(m uint64, mul [2]uint64, shift uint) uint64 {
 	if mid < lo2 {
 		hi++ // Carry
 	}
-	
+
 	// Now we have a 192-bit result: (hi:mid:lo)
 	// Shift right by 'shift' bits
 	if shift >= 128 {
@@ -233,7 +233,7 @@ func formatMantissa64(m uint64) []byte {
 	if m == 0 {
 		return []byte{'0'}
 	}
-	
+
 	// Count digits
 	digits := 0
 	temp := m
@@ -241,13 +241,13 @@ func formatMantissa64(m uint64) []byte {
 		digits++
 		temp /= 10
 	}
-	
+
 	result := make([]byte, digits)
 	for i := digits - 1; i >= 0; i-- {
 		result[i] = byte('0' + m%10)
 		m /= 10
 	}
-	
+
 	return result
 }
 

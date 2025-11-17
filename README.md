@@ -314,13 +314,15 @@ if HasAVX512() {
 Run benchmarks to compare with strconv:
 
 ```bash
-# Run all benchmarks
+# Using Makefile (recommended)
+make bench                    # Run all benchmarks
+make bench-compare            # Save benchmarks for comparison
+make bench-cpu                # With CPU profiling
+make bench-mem                # With memory profiling
+
+# Or using go test directly
 go test -bench=. -benchmem
-
-# Run SIMD-specific benchmarks
 go test -bench=SIMD -benchmem
-
-# Compare specific operations
 go test -bench='ParseFloat' -benchmem
 go test -bench='Quote' -benchmem
 ```
@@ -328,13 +330,13 @@ go test -bench='Quote' -benchmem
 Run fuzz tests:
 
 ```bash
-# Fuzz float parsing
+# Using Makefile
+make fuzz                     # Quick fuzz (10s)
+make fuzz-long                # Extended fuzz (5m)
+
+# Or using go test directly
 go test -fuzz=FuzzParseFloatSIMD -fuzztime=30s
-
-# Fuzz quote/unquote
 go test -fuzz=FuzzQuoteSIMD -fuzztime=30s
-
-# Fuzz all operations
 go test -fuzz=. -fuzztime=1m
 ```
 
@@ -348,11 +350,45 @@ go test -fuzz=. -fuzztime=1m
 | **arm** | ✅ Pure Go | Generic fallback |
 | **Other** | ✅ Pure Go | Generic fallback |
 
+## CI/CD
+
+This project uses GitHub Actions for continuous integration. The CI pipeline:
+
+- Tests on multiple platforms (Linux, macOS)
+- Runs tests with race detector
+- Generates coverage reports
+- Runs benchmarks
+- Cross-compiles for multiple architectures (amd64, arm64, 386)
+
+See [.github/workflows/test.yml](.github/workflows/test.yml) for the complete CI configuration.
+
+To run CI checks locally:
+```bash
+make ci              # Standard CI checks
+make ci-extended     # Extended CI checks with all linters
+```
+
 ## Requirements
 
 - **Go 1.24+** (for latest optimizations)
+- **Make** (for development workflows)
 - No external dependencies for core functionality
 - Optional: CPU with AVX2/AVX-512 for maximum performance
+
+### Development Requirements
+
+For development, install tools with:
+```bash
+make install-tools
+```
+
+Optional tools (install separately):
+- [golangci-lint](https://golangci-lint.run/) - Comprehensive linter (recommended)
+- [hadolint](https://github.com/hadolint/hadolint) - Docker linting
+- [shellcheck](https://www.shellcheck.net/) - Shell script linting
+- [yamllint](https://yamllint.readthedocs.io/) - YAML linting
+
+Check tool status: `make tool-status`
 
 ## Project Structure
 
@@ -410,17 +446,79 @@ fastparse/
     └── validation/           # Validation helpers
 ```
 
+## Development Tools
+
+This project includes a comprehensive Makefile with 90+ targets for development, testing, linting, and quality assurance.
+
+### Quick Start
+
+```bash
+# Install all development tools
+make install-tools
+
+# Run tests
+make test
+
+# Format and lint code
+make fmt lint
+
+# Before committing
+make pre-commit
+```
+
+### Common Commands
+
+| Command | Description |
+|---------|-------------|
+| `make help` | Show all available commands |
+| `make quick-start` | Display setup guide |
+| `make workflows` | Show common workflows |
+| `make tool-status` | Check installed tools |
+
+### Development Workflow
+
+```bash
+# Daily development
+make fmt                  # Format code
+make test-short           # Quick tests
+make pre-commit           # Before committing
+
+# Before push
+make pre-push             # Quick checks
+make full-check           # Complete quality check
+
+# Security & Performance
+make audit                # Security audit
+make bench                # Run benchmarks
+```
+
+### Available Targets
+
+- **Testing**: `test`, `test-race`, `test-coverage`, `test-all`, `bench`, `fuzz`
+- **Formatting**: `fmt`, `fmt-check`, `gofumpt`
+- **Linting**: `lint`, `lint-all`, `lint-advanced`, `super-lint`
+- **Security**: `vuln-check`, `gosec`, `audit`
+- **Quality**: `complexity-check`, `duplicate-check`, `spell-check`
+- **Build**: `build`, `build-all`, `clean`
+
+For complete documentation, see:
+- [MAKEFILE_REFERENCE.md](MAKEFILE_REFERENCE.md) - Complete reference guide
+- [MAKEFILE_QUICKREF.md](MAKEFILE_QUICKREF.md) - Quick reference card
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Contributing guidelines
+
 ## Contributing
 
 Contributions are welcome! Please:
 
 1. **Fork the repository**
 2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Add tests** for new functionality
-4. **Run benchmarks** to verify performance
-5. **Commit changes** (`git commit -m 'Add amazing feature'`)
-6. **Push to branch** (`git push origin feature/amazing-feature`)
-7. **Open a Pull Request**
+3. **Install development tools**: `make install-tools`
+4. **Add tests** for new functionality
+5. **Run checks**: `make pre-commit` or `make full-check`
+6. **Run benchmarks** to verify performance
+7. **Commit changes** (`git commit -m 'Add amazing feature'`)
+8. **Push to branch** (`git push origin feature/amazing-feature`)
+9. **Open a Pull Request**
 
 ### Development Guidelines
 
@@ -429,6 +527,10 @@ Contributions are welcome! Please:
 - Include fuzz tests for parsing functions
 - Document assembly implementations
 - Follow Go idioms and best practices
+- Run `make pre-commit` before committing
+- Run `make full-check` before opening a PR
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## License
 

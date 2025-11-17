@@ -17,7 +17,7 @@ func formatExponentOptimized(dst []byte, exp int, fmt byte) []byte {
 	// Use optimized Go implementation
 	// Append format character
 	dst = append(dst, fmt)
-	
+
 	// Append sign
 	ch := byte('+')
 	if exp < 0 {
@@ -25,7 +25,7 @@ func formatExponentOptimized(dst []byte, exp int, fmt byte) []byte {
 		exp = -exp
 	}
 	dst = append(dst, ch)
-	
+
 	// Append exponent digits
 	switch {
 	case exp < 10:
@@ -35,7 +35,6 @@ func formatExponentOptimized(dst []byte, exp int, fmt byte) []byte {
 	default:
 		dst = append(dst, byte(exp/100)+'0', byte(exp/10)%10+'0', byte(exp%10)+'0')
 	}
-	
+
 	return dst
 }
-

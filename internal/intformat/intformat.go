@@ -11,12 +11,12 @@ func FormatInt64(i int64, base int) string {
 	if base < 2 || base > 36 {
 		panic("intformat: invalid base")
 	}
-	
+
 	// Handle zero specially
 	if i == 0 {
 		return "0"
 	}
-	
+
 	// Handle negative numbers
 	neg := i < 0
 	var u uint64
@@ -30,10 +30,10 @@ func FormatInt64(i int64, base int) string {
 	} else {
 		u = uint64(i)
 	}
-	
+
 	// Format the unsigned value
 	s := FormatUint64(u, base)
-	
+
 	// Add minus sign for negative numbers
 	if neg {
 		return "-" + s
@@ -48,12 +48,12 @@ func FormatUint64(u uint64, base int) string {
 	if base < 2 || base > 36 {
 		panic("intformat: invalid base")
 	}
-	
+
 	// Handle zero specially
 	if u == 0 {
 		return "0"
 	}
-	
+
 	// Use optimized paths for common bases
 	switch base {
 	case 10:
@@ -75,12 +75,12 @@ func AppendInt64(dst []byte, i int64, base int) []byte {
 	if base < 2 || base > 36 {
 		panic("intformat: invalid base")
 	}
-	
+
 	// Handle zero specially
 	if i == 0 {
 		return append(dst, '0')
 	}
-	
+
 	// Handle negative numbers
 	neg := i < 0
 	var u uint64
@@ -95,7 +95,7 @@ func AppendInt64(dst []byte, i int64, base int) []byte {
 	} else {
 		u = uint64(i)
 	}
-	
+
 	// Append the unsigned value
 	return AppendUint64(dst, u, base)
 }
@@ -106,12 +106,12 @@ func AppendUint64(dst []byte, u uint64, base int) []byte {
 	if base < 2 || base > 36 {
 		panic("intformat: invalid base")
 	}
-	
+
 	// Handle zero specially
 	if u == 0 {
 		return append(dst, '0')
 	}
-	
+
 	// Use optimized paths for common bases
 	switch base {
 	case 10:
@@ -126,4 +126,3 @@ func AppendUint64(dst []byte, u uint64, base int) []byte {
 		return appendUint64Generic(dst, u, base)
 	}
 }
-

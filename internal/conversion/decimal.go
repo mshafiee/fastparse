@@ -15,4 +15,3 @@ func ConvertDecimalExact(mantissa uint64, exp int, neg bool, pow10Table []float6
 func ConvertDecimalExtended(mantissa uint64, exp int, neg bool, pow10Table []float64) (float64, bool) {
 	return convertDecimalExtendedImpl(mantissa, exp, neg, pow10Table)
 }
-

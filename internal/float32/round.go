@@ -26,16 +26,16 @@ func RoundFloat32(f float64) (result float64, overflow bool) {
 	if math.IsInf(f, 0) {
 		return f, false
 	}
-	
+
 	// Convert to float32 and back to get proper rounding
 	f32 := float32(f)
 	result = float64(f32)
-	
+
 	// Check for overflow: if the result is infinity but the input wasn't
 	if math.IsInf(result, 0) && !math.IsInf(f, 0) {
 		return result, true
 	}
-	
+
 	return result, false
 }
 
@@ -44,8 +44,7 @@ func IsFloat32Overflow(f float64) bool {
 	if math.IsInf(f, 0) || math.IsNaN(f) {
 		return false
 	}
-	
+
 	abs := math.Abs(f)
 	return abs > MaxFloat32
 }
-

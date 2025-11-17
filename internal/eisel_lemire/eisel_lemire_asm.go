@@ -35,13 +35,13 @@ func TryParse(mantissa uint64, exp10 int) (float64, bool) {
 
 	// Call assembly implementation with pointers to both tables
 	result, ok := tryParseAsm(mantissa, exp10, &pow10TableHigh[0], &pow10TableLow[0])
-	
+
 	// Assembly Eisel-Lemire may not detect all overflow cases or may produce NaN
 	// If result is NaN, fall back to allow proper overflow detection
 	if ok && math.IsNaN(result) {
 		return 0, false
 	}
-	
+
 	// If result is exactly MaxFloat64 with mantissa+exp indicating potential overflow,
 	// fall back to big.Float for proper overflow detection
 	if ok {
@@ -55,6 +55,6 @@ func TryParse(mantissa uint64, exp10 int) (float64, bool) {
 			return 0, false
 		}
 	}
-	
+
 	return result, ok
 }

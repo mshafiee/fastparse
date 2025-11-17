@@ -35,7 +35,7 @@ func init() {
 		d3 := (i / 100) % 10
 		d2 := (i / 10) % 10
 		d1 := i % 10
-		
+
 		offset := i * 4
 		digit4Table[offset+0] = byte('0' + d4)
 		digit4Table[offset+1] = byte('0' + d3)
@@ -157,13 +157,13 @@ func mulHi(x, y uint64) (hi, lo uint64) {
 	x1 := x >> 32
 	y0 := y & mask32
 	y1 := y >> 32
-	
+
 	w0 := x0 * y0
 	t := x1*y0 + w0>>32
 	w1 := t & mask32
 	w2 := t >> 32
 	w1 += x0 * y1
-	
+
 	hi = x1*y1 + w2 + w1>>32
 	lo = x * y
 	return
@@ -199,10 +199,10 @@ func init() {
 	for i := 0; i < 256; i++ {
 		hi := i >> 4
 		lo := i & 0xF
-		
+
 		hex2TableUpper[i*2] = hexUpperTable[hi]
 		hex2TableUpper[i*2+1] = hexUpperTable[lo]
-		
+
 		hex2TableLower[i*2] = hexLowerTable[hi]
 		hex2TableLower[i*2+1] = hexLowerTable[lo]
 	}
@@ -372,4 +372,3 @@ func trailingZeros32(x uint32) int {
 	}
 	return n
 }
-

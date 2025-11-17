@@ -7,6 +7,7 @@
 package validation
 
 // hasUnderscoreNEON scans for underscore using NEON (16 bytes at a time)
+//
 //go:noescape
 func hasUnderscoreNEON(s string) bool
 
@@ -16,7 +17,7 @@ func hasComplexCharsImpl(s string) bool {
 	if len(s) < 16 {
 		return hasUnderscoreScalar(s)
 	}
-	
+
 	// NEON is always available on ARM64
 	return hasUnderscoreNEON(s)
 }
@@ -30,4 +31,3 @@ func hasUnderscoreScalar(s string) bool {
 	}
 	return false
 }
-

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:build ignore
 // +build ignore
 
 package main
@@ -41,7 +42,7 @@ func main() {
 
 	// Generate pow5Split table (multiplication by 5^e)
 	generatePow5Split(f)
-	
+
 	// Generate pow5InvSplit table (division by 5^e, i.e., multiplication by 5^-e)
 	generatePow5InvSplit(f)
 }
@@ -59,22 +60,22 @@ func generatePow5Split(f *os.File) {
 	for i := 0; i < 326; i++ {
 		// Calculate 5^i * 2^121 to get high bits
 		val := big.NewInt(0).Mul(power, shift)
-		
+
 		// We need the high 128 bits, so divide by 2^121 to get back scaled value
 		// Then extract high 64 and low 64 bits
-		
+
 		// Get the bit length
 		bitLen := val.BitLen()
-		
+
 		var hi, lo uint64
 		if bitLen > 121 {
 			// Shift right by 121 to get the high bits
 			shifted := big.NewInt(0).Rsh(val, 121)
-			
+
 			// Extract low 64 bits
 			lo64 := big.NewInt(0).And(shifted, big.NewInt(0).Sub(big.NewInt(0).Lsh(one, 64), one))
 			lo = lo64.Uint64()
-			
+
 			// Extract high 64 bits
 			hi64 := big.NewInt(0).Rsh(shifted, 64)
 			if hi64.BitLen() > 0 && hi64.BitLen() <= 64 {
@@ -91,7 +92,7 @@ func generatePow5Split(f *os.File) {
 		}
 
 		fmt.Fprintf(f, "\t{0x%x, 0x%x}, // 5^%d\n", hi, lo, i)
-		
+
 		// Next power: multiply by 5
 		power.Mul(power, five)
 	}
@@ -112,21 +113,21 @@ func generatePow5InvSplit(f *os.File) {
 	for i := 0; i < 342; i++ {
 		// Calculate ceil(2^(i + 121) / 5^i)
 		// = ceil(2^(i + 121) / 5^i)
-		
+
 		numerator := big.NewInt(0).Lsh(one, uint(i+121))
-		
+
 		// Divide and take ceiling
 		quotient := big.NewInt(0).Div(numerator, power)
 		remainder := big.NewInt(0).Mod(numerator, power)
-		
+
 		if remainder.Sign() > 0 {
 			quotient.Add(quotient, one) // Ceiling
 		}
-		
+
 		// Extract high 64 and low 64 bits
 		lo64 := big.NewInt(0).And(quotient, big.NewInt(0).Sub(big.NewInt(0).Lsh(one, 64), one))
 		lo := lo64.Uint64()
-		
+
 		hi64 := big.NewInt(0).Rsh(quotient, 64)
 		var hi uint64
 		if hi64.BitLen() > 0 && hi64.BitLen() <= 64 {
@@ -136,7 +137,7 @@ func generatePow5InvSplit(f *os.File) {
 		}
 
 		fmt.Fprintf(f, "\t{0x%x, 0x%x}, // ceil(2^%d / 5^%d)\n", hi, lo, i+121, i)
-		
+
 		// Next power: multiply by 5
 		power.Mul(power, five)
 	}
@@ -144,4 +145,3 @@ func generatePow5InvSplit(f *os.File) {
 	fmt.Fprintln(f, "}")
 	fmt.Fprintln(f, "")
 }
-

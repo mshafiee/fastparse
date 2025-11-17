@@ -69,7 +69,7 @@ func parseFloatGeneric(s string) (float64, error) {
 	// TIER 2: Pattern classification and optimized simple parser (25-30% of inputs)
 	// Use the optimized classifier (it's already very fast at 3-10 ns)
 	pattern := classifier.Classify(s)
-	
+
 	if pattern == classifier.PatternSimple {
 		// Simple pattern: try improved fast path
 		// Format: [-+]?[0-9]+\.?[0-9]*([eE][-+]?[0-9]+)?
@@ -92,10 +92,10 @@ func parseFloatGeneric(s string) (float64, error) {
 		}
 		// Fall through to FSA if Eisel-Lemire also fails
 	}
-	
+
 	// TIER 3: Complex pattern handling - comprehensive FSA path (5-10% of inputs)
 	// Handles: underscores, hex floats, special values (inf/nan), very long numbers
-	
+
 	// Check for hex floats specifically (pattern classifier rejects these as complex)
 	if len(s) > 2 && len(s) < 64 {
 		idx := 0
@@ -108,7 +108,7 @@ func parseFloatGeneric(s string) (float64, error) {
 			}
 		}
 	}
-	
+
 	// Try long decimal fast path for very long simple decimals
 	// (pattern classifier rejects >24 chars as complex)
 	if len(s) >= 20 && len(s) <= 100 && !validation.HasComplexChars(s) {
@@ -152,9 +152,9 @@ type parsedComponents struct {
 	special  specialKind
 
 	mantissa        uint64
-	mantDigits      []byte        // Slice view into mantDigitsArray or heap allocation
-	mantDigitsArray [32]byte      // Stack array for common cases (≤32 digits)
-	mantDigitsLen   int           // Length of mantDigits
+	mantDigits      []byte   // Slice view into mantDigitsArray or heap allocation
+	mantDigitsArray [32]byte // Stack array for common cases (≤32 digits)
+	mantDigitsLen   int      // Length of mantDigits
 	mantExp         int
 	exp             int64
 	expNeg          bool
@@ -472,39 +472,39 @@ func convertDecimalExact(mantissa uint64, exp int, neg bool) (float64, bool) {
 	if mantissa>>float64MantissaBits != 0 {
 		return 0, false
 	}
-	
+
 	f := float64(mantissa)
 	if neg {
 		f = -f
 	}
-	
+
 	switch {
 	case exp == 0:
 		// An exact integer
 		return f, true
-		
+
 	case exp > 0 && exp <= 15+22: // mantissa * 10^exp
 		// Exact integers are <= 10^15
 		// Exact powers of ten are <= 10^22
 		// If exponent is big but mantissa is small, can use float arithmetic
-		
+
 		if exp > 22 {
 			// Move some zeros into the integer part
 			f *= float64pow10[exp-22]
 			exp = 22
 		}
-		
+
 		if f > 1e15 || f < -1e15 {
 			// Exponent was really too large for exact arithmetic
 			return 0, false
 		}
-		
+
 		return f * float64pow10[exp], true
-		
+
 	case exp < 0 && exp >= -22: // mantissa / 10^|exp|
 		return f / float64pow10[-exp], true
 	}
-	
+
 	return 0, false
 }
 
@@ -516,10 +516,10 @@ func convertDecimalExtended(mantissa uint64, exp int, neg bool) (float64, bool) 
 	if exp < -308 || exp > 308 {
 		return 0, false
 	}
-	
+
 	// If mantissa is too large for float64, round it down to 53 bits
 	const maxMantissa = uint64(1) << 53
-	
+
 	if mantissa > maxMantissa {
 		// Optimized rounding: calculate how many divisions needed upfront
 		// This is faster than loop for large mantissas
@@ -529,7 +529,7 @@ func convertDecimalExtended(mantissa uint64, exp int, neg bool) (float64, bool) 
 			temp /= 10
 			digitsToRemove++
 		}
-		
+
 		// Perform divisions with accumulated rounding
 		// More accurate than iterative rounding
 		if digitsToRemove > 0 {
@@ -542,27 +542,27 @@ func convertDecimalExtended(mantissa uint64, exp int, neg bool) (float64, bool) 
 					return 0, false
 				}
 			}
-			
+
 			quotient := mantissa / divisor
 			remainder := mantissa % divisor
-			
+
 			// Round based on the remainder
 			// If remainder > divisor/2, round up
 			halfDivisor := divisor / 2
 			if remainder > halfDivisor || (remainder == halfDivisor && (quotient&1) != 0) {
 				quotient++
 			}
-			
+
 			mantissa = quotient
 			exp += digitsToRemove
-			
+
 			// Re-check exponent range
 			if exp > 308 {
 				return 0, false
 			}
 		}
 	}
-	
+
 	// Now mantissa fits in float64
 	if mantissa == 0 {
 		if neg {
@@ -570,12 +570,12 @@ func convertDecimalExtended(mantissa uint64, exp int, neg bool) (float64, bool) 
 		}
 		return 0, true
 	}
-	
+
 	f := float64(mantissa)
 	if neg {
 		f = -f
 	}
-	
+
 	// Use extended exact table (covers 0-308)
 	if exp == 0 {
 		return f, true
@@ -625,7 +625,7 @@ func convertDecimalFloat(pc *parsedComponents) (float64, error) {
 		}
 		return math.Inf(1), ErrRange
 	}
-	
+
 	// Check for extreme underflow
 	if totalExp < -324 {
 		// Way below minimum normal float64, underflows to zero
@@ -697,7 +697,7 @@ func convertDecimalFloat(pc *parsedComponents) (float64, error) {
 		// because totalExp is relative to the number of digits in the big.Int
 		digitsRemoved := len(mantDigits) - maxDigits
 		totalExp += digitsRemoved
-		
+
 		mantDigits = mantDigits[:maxDigits]
 	}
 
@@ -770,7 +770,7 @@ func convertDecimalFloat(pc *parsedComponents) (float64, error) {
 		}
 		return math.Inf(1), ErrRange
 	}
-	
+
 	minF64 := new(big.Float).SetPrec(prec).SetFloat64(-math.MaxFloat64)
 	if f.Cmp(minF64) < 0 {
 		// Value below min float64
@@ -796,7 +796,7 @@ func convertDecimalFloat(pc *parsedComponents) (float64, error) {
 	if hasMoreDigits && result != 0 && acc == big.Below {
 		// big.Float rounded DOWN, but we have more non-zero digits
 		// This handles the "1.000...001" case where a distant digit should round up
-		// 
+		//
 		// Only adjust if we have VERY MANY uncollected fractional digits
 		// This avoids incorrectly rounding repeating decimals like "2.222...222"
 		uncollectedFracDigits := pc.totalFracDigits - len(pc.mantDigits)

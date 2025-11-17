@@ -8,8 +8,7 @@ package fastparse
 
 import (
 	"math"
-	"math/bits"
-	
+
 	"github.com/mshafiee/fastparse/internal/eisel_lemire"
 )
 
@@ -54,8 +53,8 @@ func parseSimpleFast(s string) (float64, uint64, int, bool, bool) {
 	var mantissa uint64
 	mantExp := 0
 	sawDot := false
-	significantDigits := 0  // Actual significant digits in mantissa
-	totalDigits := 0        // Total digits seen (for tracking position)
+	significantDigits := 0 // Actual significant digits in mantissa
+	totalDigits := 0       // Total digits seen (for tracking position)
 
 	for i < len(s) {
 		ch := s[i]
@@ -91,7 +90,7 @@ func parseSimpleFast(s string) (float64, uint64, int, bool, bool) {
 	if significantDigits == 0 && leadingZeros {
 		// This is zero - continue to parse exponent but result is 0
 		mantissa = 0
-		significantDigits = 1  // Mark as valid
+		significantDigits = 1 // Mark as valid
 	}
 
 	if significantDigits == 0 {
@@ -160,12 +159,12 @@ func parseSimpleFast(s string) (float64, uint64, int, bool, bool) {
 	// OPTIMIZATION: Direct power-of-10 conversion for small to medium exponents
 	// This bypasses Eisel-Lemire entirely for common cases (80-90% of floats)
 	// Much faster than Eisel-Lemire's complex algorithm
-	// 
+	//
 	// PHASE 1: Extended range from [-15, 15] to [-22, 308] for better coverage
 	// Uses the full float64pow10 table available in parse_float_generic.go
 	if totalExp >= -22 && totalExp <= 308 && significantDigits <= 15 {
 		result := float64(mantissa)
-		
+
 		// For small exponents, use the local simplePow10Table (faster due to cache locality)
 		if totalExp >= -15 && totalExp <= 15 {
 			if totalExp > 0 {
@@ -173,13 +172,13 @@ func parseSimpleFast(s string) (float64, uint64, int, bool, bool) {
 			} else if totalExp < 0 {
 				result /= simplePow10Table[-totalExp]
 			}
-			
+
 			if negative {
 				return -result, mantissa, totalExp, negative, true
 			}
 			return result, mantissa, totalExp, negative, true
 		}
-		
+
 		// For larger exponents, we need to be more careful about overflow
 		// Check for potential overflow before computation
 		if totalExp > 15 {
@@ -188,38 +187,38 @@ func parseSimpleFast(s string) (float64, uint64, int, bool, bool) {
 				// Return parsed data for Eisel-Lemire
 				return 0, mantissa, totalExp, negative, false
 			}
-			
+
 			// For exponents near 308, check if mantissa * 10^exp would overflow
 			// MaxFloat64 ≈ 1.797e308, so mantissa must be small
 			if totalExp >= 300 && mantissa > 1797693134862315 {
 				// Return parsed data for Eisel-Lemire
 				return 0, mantissa, totalExp, negative, false
 			}
-			
+
 			// Safe to compute: multiply
 			result *= math.Pow10(totalExp)
-			
+
 			// Verify no overflow occurred
 			if math.IsInf(result, 0) {
 				return 0, mantissa, totalExp, negative, false
 			}
-			
+
 			if negative {
 				return -result, mantissa, totalExp, negative, true
 			}
 			return result, mantissa, totalExp, negative, true
 		}
-		
+
 		// For medium negative exponents (-22 to -16)
 		if totalExp < -15 && totalExp >= -22 {
 			result /= math.Pow10(-totalExp)
-			
+
 			// Check for underflow to zero
 			if result == 0 && mantissa != 0 {
 				// Return parsed data for Eisel-Lemire
 				return 0, mantissa, totalExp, negative, false
 			}
-			
+
 			if negative {
 				return -result, mantissa, totalExp, negative, true
 			}
@@ -242,20 +241,20 @@ func parseSimpleFast(s string) (float64, uint64, int, bool, bool) {
 // simplePow10Table for direct conversion (avoids Eisel-Lemire overhead)
 // Covers 10^0 through 10^15, handles 80-90% of real-world floats
 var simplePow10Table = [16]float64{
-	1.0,                    // 10^0
-	10.0,                   // 10^1
-	100.0,                  // 10^2
-	1000.0,                 // 10^3
-	10000.0,                // 10^4
-	100000.0,               // 10^5
-	1000000.0,              // 10^6
-	10000000.0,             // 10^7
-	100000000.0,            // 10^8
-	1000000000.0,           // 10^9
-	10000000000.0,          // 10^10
-	100000000000.0,         // 10^11
-	1000000000000.0,        // 10^12
-	10000000000000.0,       // 10^13
-	100000000000000.0,      // 10^14
-	1000000000000000.0,     // 10^15
+	1.0,                // 10^0
+	10.0,               // 10^1
+	100.0,              // 10^2
+	1000.0,             // 10^3
+	10000.0,            // 10^4
+	100000.0,           // 10^5
+	1000000.0,          // 10^6
+	10000000.0,         // 10^7
+	100000000.0,        // 10^8
+	1000000000.0,       // 10^9
+	10000000000.0,      // 10^10
+	100000000000.0,     // 10^11
+	1000000000000.0,    // 10^12
+	10000000000000.0,   // 10^13
+	100000000000000.0,  // 10^14
+	1000000000000000.0, // 10^15
 }

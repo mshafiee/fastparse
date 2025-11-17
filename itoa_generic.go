@@ -15,4 +15,3 @@ func formatIntBase10Optimized(u uint64) string {
 func appendIntBase10Optimized(dst []byte, u uint64) []byte {
 	return AppendUint(dst, u, 10)
 }
-

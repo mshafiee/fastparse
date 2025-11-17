@@ -7,6 +7,7 @@
 package hexfloat
 
 // parseHexMantissaAsm is the assembly implementation
+//
 //go:noescape
 func parseHexMantissaAsm(s string, offset int, maxDigits int) (mantissa uint64, hexIntDigits int, hexFracDigits int, digitsParsed int, ok bool)
 
@@ -16,4 +17,3 @@ func parseHexMantissaImpl(s string, offset int, maxDigits int) (uint64, int, int
 	}
 	return parseHexMantissaAsm(s, offset, maxDigits)
 }
-

@@ -9,8 +9,7 @@
 //
 // It is intended to be invoked via:
 //
-//   go generate ./...
-//
+//	go generate ./...
 package main
 
 import (
@@ -332,5 +331,3 @@ func writeTables(root string, transitions [maxStates][alphabet]state, actions [m
 	}
 	return nil
 }
-
-

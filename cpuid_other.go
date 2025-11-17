@@ -15,4 +15,3 @@ func HasAVX2() bool {
 func HasAVX512() bool {
 	return false
 }
-

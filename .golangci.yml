@@ -1,0 +1,158 @@
+run:
+  timeout: 5m
+  tests: true
+  skip-dirs:
+    - testdata
+  modules-download-mode: readonly
+
+linters:
+  enable:
+    - errcheck        # Check for unchecked errors
+    - gosimple        # Simplify code
+    - govet           # Vet examines Go source code
+    - ineffassign     # Detect ineffectual assignments
+    - staticcheck     # Staticcheck is a go vet on steroids
+    - unused          # Check for unused constants, variables, functions and types
+    - gofmt           # Check whether code was gofmt-ed
+    - goimports       # Check import statements are formatted
+    - misspell        # Find commonly misspelled English words
+    - unconvert       # Remove unnecessary type conversions
+    - gosec           # Inspects source code for security problems
+    - gocritic        # Opinionated Go source code linter
+    - gocyclo         # Computes cyclomatic complexity
+    - dupl            # Tool for code clone detection
+    - unparam         # Reports unused function parameters
+    - nakedret        # Finds naked returns in functions
+    - prealloc        # Finds slice declarations that could pre-allocate
+    - exportloopref   # Checks for pointers to enclosing loop variables
+    - whitespace      # Tool for detection of leading and trailing whitespace
+    - revive          # Fast, configurable, extensible, flexible linter
+    - goconst         # Finds repeated strings that could be constants
+    - goprintffuncname # Check that printf-like functions are named with f at the end
+    - errname         # Checks that sentinel errors are prefixed with Err
+    - errorlint       # Find code that will cause problems with error wrapping
+    - forbidigo       # Forbid certain identifiers
+    - nilerr          # Finds code that returns nil even if it checks error
+    - nilnil          # Checks there is no simultaneous return of nil error and nil value
+    - nolintlint      # Reports ill-formed or insufficient nolint directives
+    - usestdlibvars   # Detects places where standard library vars could be used
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  
+  govet:
+    check-shadowing: true
+    enable-all: true
+  
+  gocyclo:
+    min-complexity: 15
+  
+  dupl:
+    threshold: 100
+  
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  
+  misspell:
+    locale: US
+  
+  nakedret:
+    max-func-lines: 30
+  
+  prealloc:
+    simple: true
+    range-loops: true
+    for-loops: true
+  
+  unparam:
+    check-exported: false
+  
+  gosec:
+    excludes:
+      - G115  # integer overflow conversion
+      - G404  # Use of weak random number generator
+  
+  revive:
+    rules:
+      - name: blank-imports
+      - name: context-as-argument
+      - name: context-keys-type
+      - name: dot-imports
+      - name: error-return
+      - name: error-strings
+      - name: error-naming
+      - name: exported
+      - name: if-return
+      - name: increment-decrement
+      - name: var-naming
+      - name: var-declaration
+      - name: package-comments
+      - name: range
+      - name: receiver-naming
+      - name: time-naming
+      - name: unexported-return
+      - name: indent-error-flow
+      - name: errorf
+      - name: empty-block
+      - name: superfluous-else
+      - name: unused-parameter
+      - name: unreachable-code
+      - name: redefines-builtin-id
+  
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - paramTypeCombine
+      - whyNoLint
+      - unnamedResult
+      - hugeParam
+
+issues:
+  exclude-rules:
+    # Exclude some linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+        - goconst
+    
+    # Exclude assembly files
+    - path: \.s$
+      linters:
+        - all
+    
+    # Allow unsafe operations in specific files
+    - path: unsafe_helpers\.go
+      linters:
+        - gosec
+    
+    # Allow complexity in generated files
+    - path: generated
+      linters:
+        - gocyclo
+        - dupl
+  
+  # Maximum issues count per one linter
+  max-issues-per-linter: 0
+  
+  # Maximum count of issues with the same text
+  max-same-issues: 0
+  
+  # Show only new issues
+  new: false
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+

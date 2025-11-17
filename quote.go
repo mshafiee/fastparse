@@ -560,12 +560,12 @@ func quoteToASCIIOptimized(s string) string {
 			break
 		}
 	}
-	
+
 	if !needsEscape {
 		// Simple case: just add quotes
 		return `"` + s + `"`
 	}
-	
+
 	// Calculate exact size needed
 	size := 2 // opening and closing quotes
 	for i := 0; i < len(s); i++ {
@@ -599,15 +599,15 @@ func quoteToASCIIOptimized(s string) string {
 			}
 		}
 	}
-	
+
 	// Build result
 	buf := make([]byte, size)
 	buf[0] = '"'
 	pos := 1
-	
+
 	for i := 0; i < len(s); {
 		c := s[i]
-		
+
 		if c >= 0x80 {
 			// Handle UTF-8
 			r, width := utf8.DecodeRuneInString(s[i:])
@@ -697,7 +697,7 @@ func quoteToASCIIOptimized(s string) string {
 			i++
 		}
 	}
-	
+
 	buf[pos] = '"'
 	return string(buf[:pos+1])
 }
@@ -713,7 +713,7 @@ func appendQuoteToASCIIOptimized(dst []byte, s string) []byte {
 			break
 		}
 	}
-	
+
 	if !needsEscape {
 		// Simple case: just add quotes
 		dst = append(dst, '"')
@@ -721,7 +721,7 @@ func appendQuoteToASCIIOptimized(dst []byte, s string) []byte {
 		dst = append(dst, '"')
 		return dst
 	}
-	
+
 	// Calculate exact size needed
 	size := 2 // opening and closing quotes
 	for i := 0; i < len(s); i++ {
@@ -755,17 +755,17 @@ func appendQuoteToASCIIOptimized(dst []byte, s string) []byte {
 			}
 		}
 	}
-	
+
 	// Grow buffer
 	oldLen := len(dst)
 	dst = append(dst, make([]byte, size)...)
-	
+
 	dst[oldLen] = '"'
 	pos := oldLen + 1
-	
+
 	for i := 0; i < len(s); {
 		c := s[i]
-		
+
 		if c >= 0x80 {
 			// Handle UTF-8
 			r, width := utf8.DecodeRuneInString(s[i:])
@@ -855,7 +855,7 @@ func appendQuoteToASCIIOptimized(dst []byte, s string) []byte {
 			i++
 		}
 	}
-	
+
 	dst[pos] = '"'
 	return dst[:pos+1]
 }

@@ -8,6 +8,7 @@ package fastparse_test
 import (
 	"fmt"
 	"log"
+
 	strconv "github.com/mshafiee/fastparse"
 )
 

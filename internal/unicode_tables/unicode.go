@@ -110,7 +110,7 @@ var GraphicRanges = &RangeTable{
 // Is reports whether the rune is in the specified table of ranges.
 func Is(rangeTab *RangeTable, r rune) bool {
 	r16 := rangeTab.R16
-	
+
 	// Fast path for Latin-1
 	if r <= 0xFF {
 		for i := 0; i < rangeTab.LatinOffset; i++ {
@@ -124,7 +124,7 @@ func Is(rangeTab *RangeTable, r rune) bool {
 		}
 		return false
 	}
-	
+
 	// Binary search R16
 	if r <= 0xFFFF {
 		// Search in R16
@@ -143,7 +143,7 @@ func Is(rangeTab *RangeTable, r rune) bool {
 		}
 		return false
 	}
-	
+
 	// Binary search R32
 	r32 := rangeTab.R32
 	lo, hi := 0, len(r32)
@@ -159,7 +159,7 @@ func Is(rangeTab *RangeTable, r rune) bool {
 			lo = mid + 1
 		}
 	}
-	
+
 	return false
 }
 
@@ -172,7 +172,7 @@ func IsPrint(r rune) bool {
 	if r < 0x7F {
 		return true
 	}
-	
+
 	// Use lookup table
 	return Is(PrintRanges, r)
 }
@@ -187,8 +187,7 @@ func IsGraphic(r rune) bool {
 	if r < 0x7F {
 		return true
 	}
-	
+
 	// Use lookup table
 	return Is(GraphicRanges, r)
 }
-

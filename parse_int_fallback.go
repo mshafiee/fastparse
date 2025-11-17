@@ -10,4 +10,3 @@ package fastparse
 func parseInt(s string, bitSize int) (int64, error) {
 	return parseIntGeneric(s, bitSize)
 }
-

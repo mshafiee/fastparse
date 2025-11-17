@@ -741,7 +741,7 @@ func ParseFloat(s string, bitSize int) (float64, error) {
 			return 0, err
 		}
 	}
-	
+
 	// For float32 or when prefix parsing is needed, use parseFloatPrefix
 	f, n, err := parseFloatPrefix(s, bitSize)
 	if n != len(s) && (err == nil || err.(*NumError).Err != ErrSyntax) {

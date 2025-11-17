@@ -10,4 +10,3 @@ package classifier
 func Classify(s string) Pattern {
 	return ClassifyPureGo(s)
 }
-

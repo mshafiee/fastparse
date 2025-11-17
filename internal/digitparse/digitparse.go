@@ -16,4 +16,3 @@ func ParseDigitsToUint64(s string, offset int) (mantissa uint64, digitCount int,
 func ParseDigitsWithDot(s string, offset int) (mantissa uint64, digitsBeforeDot int, totalDigits int, foundDot bool, ok bool) {
 	return parseDigitsWithDotImpl(s, offset)
 }
-

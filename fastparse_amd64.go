@@ -8,7 +8,7 @@ package fastparse
 
 import (
 	"math"
-	
+
 	"github.com/mshafiee/fastparse/internal/eisel_lemire"
 )
 
@@ -119,21 +119,21 @@ func parseInt(s string, bitSize int) (int64, error) {
 				return result, nil
 			}
 		}
-		
+
 		// Try AVX-512 path (processes up to 16 digits in parallel)
 		if HasAVX512() && len(s) >= 4 {
 			if result, ok := parseIntAVX512(s, bitSize); ok {
 				return result, nil
 			}
 		}
-		
+
 		// Try AVX2 path (processes up to 8 digits in parallel)
 		if HasAVX2() && len(s) >= 4 {
 			if result, ok := parseIntAVX2(s, bitSize); ok {
 				return result, nil
 			}
 		}
-		
+
 		// Fall back to basic assembly fast path
 		if result, ok := parseIntFastAsm(s, bitSize); ok {
 			return result, nil
@@ -143,4 +143,3 @@ func parseInt(s string, bitSize int) (int64, error) {
 	// Fall back to generic implementation for complex cases
 	return parseIntGeneric(s, bitSize)
 }
-

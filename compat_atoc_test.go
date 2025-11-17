@@ -6,11 +6,12 @@
 package fastparse_test
 
 import (
-	. "github.com/mshafiee/fastparse"
 	"math"
 	"math/cmplx"
 	"reflect"
 	"testing"
+
+	. "github.com/mshafiee/fastparse"
 )
 
 var (

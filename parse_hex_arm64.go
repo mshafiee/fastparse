@@ -17,4 +17,3 @@ func parseHexFastAsm(s string) (result float64, ok bool)
 func parseHexFast(s string) (float64, bool) {
 	return parseHexFastAsm(s)
 }
-

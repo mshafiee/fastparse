@@ -6,7 +6,7 @@ package fastparse
 
 import (
 	"math"
-	
+
 	"github.com/mshafiee/fastparse/internal/eisel_lemire"
 )
 
@@ -49,8 +49,8 @@ func parseSimpleFastPureGo(s string) (float64, bool) {
 	var mantissa uint64
 	mantExp := 0
 	sawDot := false
-	significantDigits := 0  // Actual significant digits in mantissa
-	totalDigits := 0        // Total digits seen (for tracking position)
+	significantDigits := 0 // Actual significant digits in mantissa
+	totalDigits := 0       // Total digits seen (for tracking position)
 
 	for i < len(s) {
 		ch := s[i]
@@ -86,7 +86,7 @@ func parseSimpleFastPureGo(s string) (float64, bool) {
 	if significantDigits == 0 && leadingZeros {
 		// This is zero - continue to parse exponent but result is 0
 		mantissa = 0
-		significantDigits = 1  // Mark as valid
+		significantDigits = 1 // Mark as valid
 	}
 
 	if significantDigits == 0 {
@@ -151,12 +151,12 @@ func parseSimpleFastPureGo(s string) (float64, bool) {
 	// OPTIMIZATION: Direct power-of-10 conversion for small to medium exponents
 	// This bypasses Eisel-Lemire entirely for common cases (80-90% of floats)
 	// Much faster than Eisel-Lemire's complex algorithm
-	// 
+	//
 	// Extended range from [-15, 15] to [-22, 22] for better coverage
 	// Note: For very large exponents (>22 or <-22), Eisel-Lemire is more accurate
 	if totalExp >= -22 && totalExp <= 22 && significantDigits <= 15 {
 		result := float64(mantissa)
-		
+
 		// For small exponents, use the local simplePow10TableShared (faster due to cache locality)
 		if totalExp >= -15 && totalExp <= 15 {
 			if totalExp > 0 {
@@ -164,13 +164,13 @@ func parseSimpleFastPureGo(s string) (float64, bool) {
 			} else if totalExp < 0 {
 				result /= simplePow10TableShared[-totalExp]
 			}
-			
+
 			if negative {
 				return -result, true
 			}
 			return result, true
 		}
-		
+
 		// For medium exponents (16-22), use math.Pow10
 		// This is faster than Eisel-Lemire and still accurate for this range
 		if totalExp > 15 && totalExp <= 22 {
@@ -180,7 +180,7 @@ func parseSimpleFastPureGo(s string) (float64, bool) {
 			}
 			return result, true
 		}
-		
+
 		// For medium negative exponents (-22 to -16)
 		if totalExp < -15 && totalExp >= -22 {
 			result /= math.Pow10(-totalExp)
@@ -206,20 +206,20 @@ func parseSimpleFastPureGo(s string) (float64, bool) {
 // simplePow10TableShared for direct conversion (avoids Eisel-Lemire overhead)
 // Covers 10^0 through 10^15, handles 80-90% of real-world floats
 var simplePow10TableShared = [16]float64{
-	1.0,                    // 10^0
-	10.0,                   // 10^1
-	100.0,                  // 10^2
-	1000.0,                 // 10^3
-	10000.0,                // 10^4
-	100000.0,               // 10^5
-	1000000.0,              // 10^6
-	10000000.0,             // 10^7
-	100000000.0,            // 10^8
-	1000000000.0,           // 10^9
-	10000000000.0,          // 10^10
-	100000000000.0,         // 10^11
-	1000000000000.0,        // 10^12
-	10000000000000.0,       // 10^13
-	100000000000000.0,      // 10^14
-	1000000000000000.0,     // 10^15
+	1.0,                // 10^0
+	10.0,               // 10^1
+	100.0,              // 10^2
+	1000.0,             // 10^3
+	10000.0,            // 10^4
+	100000.0,           // 10^5
+	1000000.0,          // 10^6
+	10000000.0,         // 10^7
+	100000000.0,        // 10^8
+	1000000000.0,       // 10^9
+	10000000000.0,      // 10^10
+	100000000000.0,     // 10^11
+	1000000000000.0,    // 10^12
+	10000000000000.0,   // 10^13
+	100000000000000.0,  // 10^14
+	1000000000000000.0, // 10^15
 }

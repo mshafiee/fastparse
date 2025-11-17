@@ -411,7 +411,7 @@ func fmtE(dst []byte, neg bool, d decimalSlice, prec int, fmt byte) []byte {
 	if d.nd == 0 { // special case: 0 has exponent 0
 		exp = 0
 	}
-	
+
 	return formatExponentOptimized(dst, exp, fmt)
 }
 

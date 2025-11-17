@@ -12,12 +12,12 @@ import (
 
 // CPU feature flags
 var (
-	hasAVX2      bool
-	hasAVX512F   bool
-	hasAVX512BW  bool
-	hasAVX512DQ  bool
-	hasBMI2      bool
-	onceInit     sync.Once
+	hasAVX2     bool
+	hasAVX512F  bool
+	hasAVX512BW bool
+	hasAVX512DQ bool
+	hasBMI2     bool
+	onceInit    sync.Once
 )
 
 // detectCPUFeatures uses CPUID to detect CPU capabilities
@@ -31,7 +31,7 @@ func initCPUFeatures() {
 	_, ebx, _, _ := cpuidAMD64(7, 0)
 	hasAVX2 = (ebx & (1 << 5)) != 0
 	hasBMI2 = (ebx & (1 << 8)) != 0
-	
+
 	// Check for AVX-512 support
 	// AVX512F (Foundation) - bit 16
 	// AVX512BW (Byte/Word) - bit 30
@@ -64,4 +64,3 @@ func HasBMI2() bool {
 	onceInit.Do(initCPUFeatures)
 	return hasBMI2
 }
-

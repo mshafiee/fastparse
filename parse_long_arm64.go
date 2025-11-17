@@ -17,4 +17,3 @@ func parseLongDecimalFastAsm(s string) (result float64, ok bool)
 func parseLongDecimalFast(s string) (float64, bool) {
 	return parseLongDecimalFastAsm(s)
 }
-

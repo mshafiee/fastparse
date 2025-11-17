@@ -11,16 +11,16 @@ func parseHexMantissaImpl(s string, offset int, maxDigits int) (uint64, int, int
 	if offset >= len(s) || maxDigits <= 0 {
 		return 0, 0, 0, 0, false
 	}
-	
+
 	var mantissa uint64
 	hexIntDigits := 0
 	hexFracDigits := 0
 	digitsParsed := 0
 	sawDot := false
-	
+
 	for i := offset; i < len(s) && digitsParsed < maxDigits; i++ {
 		ch := s[i]
-		
+
 		if ch == '.' {
 			if sawDot {
 				break // Two dots
@@ -28,7 +28,7 @@ func parseHexMantissaImpl(s string, offset int, maxDigits int) (uint64, int, int
 			sawDot = true
 			continue
 		}
-		
+
 		var digit uint64
 		if ch >= '0' && ch <= '9' {
 			digit = uint64(ch - '0')
@@ -39,21 +39,20 @@ func parseHexMantissaImpl(s string, offset int, maxDigits int) (uint64, int, int
 		} else {
 			break // Not a hex digit
 		}
-		
+
 		mantissa = mantissa*16 + digit
 		digitsParsed++
-		
+
 		if sawDot {
 			hexFracDigits++
 		} else {
 			hexIntDigits++
 		}
 	}
-	
+
 	if digitsParsed == 0 {
 		return 0, 0, 0, 0, false
 	}
-	
+
 	return mantissa, hexIntDigits, hexFracDigits, digitsParsed, true
 }
-

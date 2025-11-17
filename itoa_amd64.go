@@ -24,4 +24,3 @@ func appendIntBase10Optimized(dst []byte, u uint64) []byte {
 	n := formatIntBase10ASM(buf[:], u)
 	return append(dst, buf[:n]...)
 }
-

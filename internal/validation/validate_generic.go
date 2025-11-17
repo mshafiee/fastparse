@@ -16,4 +16,3 @@ func hasComplexCharsImpl(s string) bool {
 	}
 	return false
 }
-

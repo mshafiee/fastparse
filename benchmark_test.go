@@ -7,7 +7,7 @@ package fastparse_test
 import (
 	"strconv"
 	"testing"
-	
+
 	"github.com/mshafiee/fastparse"
 )
 
@@ -288,4 +288,3 @@ func BenchmarkIsGraphic_Strconv(b *testing.B) {
 		_ = strconv.IsGraphic(r)
 	}
 }
-

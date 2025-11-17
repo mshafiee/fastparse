@@ -19,17 +19,17 @@ func parseLongDecimalFast(s string) (float64, bool) {
 			return 0, false
 		}
 	}
-	
+
 	// Collect mantissa (first 19 significant digits)
 	var mantissa uint64
 	mantissaDigits := 0
 	digitsBeforeDot := 0
-	
+
 	// Skip leading zeros
 	for i < len(s) && s[i] == '0' {
 		i++
 	}
-	
+
 	// Collect digits before decimal point
 	for i < len(s) && s[i] != '.' {
 		digit := s[i] - '0'
@@ -46,11 +46,11 @@ func parseLongDecimalFast(s string) (float64, bool) {
 		digitsBeforeDot++
 		i++
 	}
-	
+
 	// Handle decimal point if present
 	if i < len(s) && s[i] == '.' {
 		i++
-		
+
 		// Collect digits after decimal point
 		for i < len(s) {
 			digit := s[i] - '0'
@@ -65,20 +65,20 @@ func parseLongDecimalFast(s string) (float64, bool) {
 			i++
 		}
 	}
-	
+
 	// Validate we consumed everything
 	if i != len(s) || mantissaDigits == 0 {
 		return 0, false
 	}
-	
+
 	// Calculate exponent: position of decimal point - digits in mantissa
 	exp := digitsBeforeDot - mantissaDigits
-	
+
 	// Quick range check
 	if exp < -308 || exp > 308 {
 		return 0, false
 	}
-	
+
 	// Convert mantissa to float64
 	if mantissa == 0 {
 		if negative {
@@ -86,17 +86,17 @@ func parseLongDecimalFast(s string) (float64, bool) {
 		}
 		return 0, true
 	}
-	
+
 	f := float64(mantissa)
 	if negative {
 		f = -f
 	}
-	
+
 	// Apply power of 10 (simplified version)
 	if exp == 0 {
 		return f, true
 	}
-	
+
 	// For non-zero exponents, fall back to full parser
 	return 0, false
 }

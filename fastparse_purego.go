@@ -8,4 +8,3 @@ package fastparse
 
 // parseFloat and parseInt are implemented in parse_float_generic.go
 // and parse_int_generic.go for non-optimized architectures.
-

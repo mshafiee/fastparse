@@ -41,15 +41,15 @@ func parseDirectFloat(s string) (float64, uint64, int, bool, bool) {
 	// Parse integer part
 	var intPart uint64
 	intDigits := 0
-	
+
 	for i < len(s) && s[i] >= '0' && s[i] <= '9' {
 		digit := uint64(s[i] - '0')
-		
+
 		// Limit to 6 digits total for direct conversion (precision guaranteed)
 		if intDigits >= 6 {
 			return 0, 0, 0, false, false
 		}
-		
+
 		intPart = intPart*10 + digit
 		intDigits++
 		i++
@@ -63,7 +63,7 @@ func parseDirectFloat(s string) (float64, uint64, int, bool, bool) {
 		}
 		return result, 0, 0, false, true
 	}
-	
+
 	// Any other pattern (decimal, exponent, etc.) - fall back to parseSimpleFast
 	// which has Eisel-Lemire inlined for correct rounding
 	// Note: Direct decimal division has rounding precision issues,
@@ -74,20 +74,20 @@ func parseDirectFloat(s string) (float64, uint64, int, bool, bool) {
 // pow10Direct is a small table for direct exponent computation
 // This covers exp in range [-15, 15] which handles most real-world cases
 var pow10Direct = [16]float64{
-	1.0,                 // 10^0
-	10.0,                // 10^1
-	100.0,               // 10^2
-	1000.0,              // 10^3
-	10000.0,             // 10^4
-	100000.0,            // 10^5
-	1000000.0,           // 10^6
-	10000000.0,          // 10^7
-	100000000.0,         // 10^8
-	1000000000.0,        // 10^9
-	10000000000.0,       // 10^10
-	100000000000.0,      // 10^11
-	1000000000000.0,     // 10^12
-	10000000000000.0,    // 10^13
-	100000000000000.0,   // 10^14
-	1000000000000000.0,  // 10^15
+	1.0,                // 10^0
+	10.0,               // 10^1
+	100.0,              // 10^2
+	1000.0,             // 10^3
+	10000.0,            // 10^4
+	100000.0,           // 10^5
+	1000000.0,          // 10^6
+	10000000.0,         // 10^7
+	100000000.0,        // 10^8
+	1000000000.0,       // 10^9
+	10000000000.0,      // 10^10
+	100000000000.0,     // 10^11
+	1000000000000.0,    // 10^12
+	10000000000000.0,   // 10^13
+	100000000000000.0,  // 10^14
+	1000000000000000.0, // 10^15
 }

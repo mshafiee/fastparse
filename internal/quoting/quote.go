@@ -95,7 +95,7 @@ func quoteWith(s string, quote byte, mode int) string {
 		buf[len(buf)-1] = quote
 		return string(buf)
 	}
-	
+
 	// Two-pass approach: calculate required size first
 	size := 2 // Opening and closing quotes
 	for i := 0; i < len(s); {
@@ -103,18 +103,18 @@ func quoteWith(s string, quote byte, mode int) string {
 		i += width
 		size += runeEscapedSize(r, quote, mode)
 	}
-	
+
 	// Allocate buffer and build result
 	buf := make([]byte, size)
 	buf[0] = quote
 	pos := 1
-	
+
 	for i := 0; i < len(s); {
 		r, width := utf8.DecodeRuneInString(s[i:])
 		i += width
 		pos = appendEscapedRune(buf, pos, r, quote, mode)
 	}
-	
+
 	buf[pos] = quote
 	return string(buf)
 }
@@ -128,7 +128,7 @@ func appendQuotedWith(dst []byte, s string, quote byte, mode int) []byte {
 		dst = append(dst, quote)
 		return dst
 	}
-	
+
 	// Calculate required size
 	size := 2
 	for i := 0; i < len(s); {
@@ -136,21 +136,21 @@ func appendQuotedWith(dst []byte, s string, quote byte, mode int) []byte {
 		i += width
 		size += runeEscapedSize(r, quote, mode)
 	}
-	
+
 	// Grow buffer
 	oldLen := len(dst)
 	dst = append(dst, make([]byte, size)...)
-	
+
 	// Build quoted string
 	dst[oldLen] = quote
 	pos := oldLen + 1
-	
+
 	for i := 0; i < len(s); {
 		r, width := utf8.DecodeRuneInString(s[i:])
 		i += width
 		pos = appendEscapedRune(dst, pos, r, quote, mode)
 	}
-	
+
 	dst[pos] = quote
 	return dst[:pos+1]
 }
@@ -170,7 +170,7 @@ func appendQuotedRuneWith(dst []byte, r rune, quote byte, mode int) []byte {
 	size := 2 + runeEscapedSize(r, quote, mode)
 	oldLen := len(dst)
 	dst = append(dst, make([]byte, size)...)
-	
+
 	dst[oldLen] = quote
 	pos := appendEscapedRune(dst, oldLen+1, r, quote, mode)
 	dst[pos] = quote
@@ -191,7 +191,7 @@ func checkNeedsEscaping(s string, quote byte, mode int) bool {
 func checkNeedsEscapingGeneric(s string, quote byte, mode int) bool {
 	for i := 0; i < len(s); {
 		c := s[i]
-		
+
 		// Fast path for common ASCII printable characters
 		if c < utf8.RuneSelf {
 			if c == quote || c == '\\' || c < ' ' || c == 0x7F {
@@ -203,17 +203,17 @@ func checkNeedsEscapingGeneric(s string, quote byte, mode int) bool {
 			i++
 			continue
 		}
-		
+
 		// Multi-byte UTF-8
 		r, width := utf8.DecodeRuneInString(s[i:])
 		if r == utf8.RuneError {
 			return true
 		}
-		
+
 		if mode == ModeASCII {
 			return true // Non-ASCII needs escaping in ASCII mode
 		}
-		
+
 		if mode == ModeGraphic {
 			if !isGraphic(r) {
 				return true
@@ -223,10 +223,10 @@ func checkNeedsEscapingGeneric(s string, quote byte, mode int) bool {
 				return true
 			}
 		}
-		
+
 		i += width
 	}
-	
+
 	return false
 }
 
@@ -236,13 +236,13 @@ func runeEscapedSize(r rune, quote byte, mode int) int {
 	if r == rune(quote) || r == '\\' {
 		return 2 // \q or \\
 	}
-	
+
 	// Standard escape sequences
 	switch r {
 	case '\a', '\b', '\f', '\n', '\r', '\t', '\v':
 		return 2
 	}
-	
+
 	// ASCII printable
 	if r < utf8.RuneSelf {
 		if r >= ' ' && r != 0x7F {
@@ -251,7 +251,7 @@ func runeEscapedSize(r rune, quote byte, mode int) int {
 		// Control characters: \xHH
 		return 4
 	}
-	
+
 	// Non-ASCII
 	if mode == ModeASCII {
 		if r <= 0xFFFF {
@@ -259,7 +259,7 @@ func runeEscapedSize(r rune, quote byte, mode int) int {
 		}
 		return 10 // \UHHHHHHHH
 	}
-	
+
 	// Check if printable/graphic
 	needsEscape := false
 	if mode == ModeGraphic {
@@ -267,14 +267,14 @@ func runeEscapedSize(r rune, quote byte, mode int) int {
 	} else {
 		needsEscape = !isPrint(r)
 	}
-	
+
 	if needsEscape {
 		if r <= 0xFFFF {
 			return 6 // \uHHHH
 		}
 		return 10 // \UHHHHHHHH
 	}
-	
+
 	// Valid UTF-8 rune, return its size
 	return utf8.RuneLen(r)
 }
@@ -293,7 +293,7 @@ func appendEscapedRune(buf []byte, pos int, r rune, quote byte, mode int) int {
 		buf[pos+1] = '\\'
 		return pos + 2
 	}
-	
+
 	// Standard escape sequences
 	switch r {
 	case '\a':
@@ -325,7 +325,7 @@ func appendEscapedRune(buf []byte, pos int, r rune, quote byte, mode int) int {
 		buf[pos+1] = 'v'
 		return pos + 2
 	}
-	
+
 	// ASCII printable
 	if r < utf8.RuneSelf {
 		if r >= ' ' && r != 0x7F {
@@ -339,7 +339,7 @@ func appendEscapedRune(buf []byte, pos int, r rune, quote byte, mode int) int {
 		buf[pos+3] = hexDigit(byte(r) & 0xF)
 		return pos + 4
 	}
-	
+
 	// Non-ASCII
 	if mode == ModeASCII {
 		if r <= 0xFFFF {
@@ -365,7 +365,7 @@ func appendEscapedRune(buf []byte, pos int, r rune, quote byte, mode int) int {
 		buf[pos+9] = hexDigit(byte(r & 0xF))
 		return pos + 10
 	}
-	
+
 	// Check if printable/graphic
 	needsEscape := false
 	if mode == ModeGraphic {
@@ -373,7 +373,7 @@ func appendEscapedRune(buf []byte, pos int, r rune, quote byte, mode int) int {
 	} else {
 		needsEscape = !isPrint(r)
 	}
-	
+
 	if needsEscape {
 		if r <= 0xFFFF {
 			// \uHHHH
@@ -398,7 +398,7 @@ func appendEscapedRune(buf []byte, pos int, r rune, quote byte, mode int) int {
 		buf[pos+9] = hexDigit(byte(r & 0xF))
 		return pos + 10
 	}
-	
+
 	// Valid UTF-8 rune, encode it
 	return pos + utf8.EncodeRune(buf[pos:], r)
 }
@@ -438,4 +438,3 @@ func isGraphic(r rune) bool {
 	// TODO: Use proper Unicode tables
 	return r != utf8.RuneError
 }
-

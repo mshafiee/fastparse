@@ -13,4 +13,3 @@ func Classify(s string) Pattern {
 
 // classifyAmd64 is implemented in classifier_amd64.s
 func classifyAmd64(s string) Pattern
-

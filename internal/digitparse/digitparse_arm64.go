@@ -7,10 +7,12 @@
 package digitparse
 
 // parseDigitsToUint64Asm is the assembly implementation
+//
 //go:noescape
 func parseDigitsToUint64Asm(s string, offset int) (mantissa uint64, digitCount int, ok bool)
 
 // parseDigitsWithDotAsm is the assembly implementation with decimal point support
+//
 //go:noescape
 func parseDigitsWithDotAsm(s string, offset int) (mantissa uint64, digitsBeforeDot int, totalDigits int, foundDot bool, ok bool)
 
@@ -27,4 +29,3 @@ func parseDigitsWithDotImpl(s string, offset int) (uint64, int, int, bool, bool)
 	}
 	return parseDigitsWithDotAsm(s, offset)
 }
-

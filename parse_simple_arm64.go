@@ -18,5 +18,3 @@ func parseSimpleFastAsm(s string) (result float64, mantissa uint64, exp int, neg
 func parseSimpleFast(s string) (float64, uint64, int, bool, bool) {
 	return parseSimpleFastAsm(s)
 }
-
-

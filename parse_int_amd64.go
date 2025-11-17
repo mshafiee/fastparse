@@ -12,4 +12,3 @@ package fastparse
 //
 //go:noescape
 func parseIntFastAsm(s string, bitSize int) (result int64, ok bool)
-

@@ -8,7 +8,7 @@ package fastparse
 
 import (
 	"math"
-	
+
 	"github.com/mshafiee/fastparse/internal/eisel_lemire"
 )
 
@@ -105,7 +105,7 @@ func parseInt(s string, bitSize int) (int64, error) {
 				return result, nil
 			}
 		}
-		
+
 		// Fall back to basic assembly fast path
 		if result, ok := parseIntFastAsm(s, bitSize); ok {
 			return result, nil
@@ -115,4 +115,3 @@ func parseInt(s string, bitSize int) (int64, error) {
 	// Fall back to generic implementation for complex cases
 	return parseIntGeneric(s, bitSize)
 }
-

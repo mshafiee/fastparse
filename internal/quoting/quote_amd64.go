@@ -31,8 +31,7 @@ func needsEscapingOptimized(s string, quote byte, mode int) bool {
 		// If AVX-512 didn't find anything, still need to check remainder with AVX2
 		// Fall through to AVX2 path
 	}
-	
+
 	// Use AVX2 for all strings (handles 32-byte chunks + SSE2 + scalar fallback)
 	return needsEscapingASM(s, quote, mode)
 }
-

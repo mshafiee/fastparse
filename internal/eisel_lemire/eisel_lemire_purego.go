@@ -36,7 +36,7 @@ func TryParse(mantissa uint64, exp10 int) (float64, bool) {
 	// This handles ~50% of real-world floats and avoids table lookup
 	if exp10 == 0 {
 		// For small mantissas, direct conversion is exact
-		if mantissa <= (1<<53) {
+		if mantissa <= (1 << 53) {
 			return float64(mantissa), true
 		}
 		// For larger mantissas, need full algorithm
@@ -104,7 +104,7 @@ func TryParse(mantissa uint64, exp10 int) (float64, bool) {
 		// Overflow: result would be infinity
 		return 0, false
 	}
-	
+
 	if retExp2 == 0 {
 		// Potential underflow or subnormal
 		// Handle simple subnormals (when mantissa has enough precision)
@@ -117,7 +117,7 @@ func TryParse(mantissa uint64, exp10 int) (float64, bool) {
 		// (Proper subnormal handling requires denormalization which is complex)
 		return 0, false
 	}
-	
+
 	// Check for wraparound (retExp2 underflowed)
 	if retExp2 > 0x7FF {
 		// retExp2 wrapped around (was negative), this is underflow

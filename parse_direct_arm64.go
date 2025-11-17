@@ -18,4 +18,3 @@ func parseDirectFloat(s string) (float64, uint64, int, bool, bool) {
 	result, ok := parseDirectFloatAsm(s)
 	return result, 0, 0, false, ok
 }
-

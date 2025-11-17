@@ -112,8 +112,8 @@ func parseUintGeneric(s string, base int, bitSize int) (uint64, error) {
 
 	// Track underscore usage
 	var (
-		value      uint64
-		hasDigits  bool
+		value             uint64
+		hasDigits         bool
 		lastWasUnderscore bool
 	)
 
@@ -198,4 +198,3 @@ func parseUintGeneric(s string, base int, bitSize int) (uint64, error) {
 
 	return value, nil
 }
-

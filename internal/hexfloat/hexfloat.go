@@ -18,4 +18,3 @@ func HasHexPrefix(s string, offset int) bool {
 	}
 	return s[offset] == '0' && (s[offset+1] == 'x' || s[offset+1] == 'X')
 }
-

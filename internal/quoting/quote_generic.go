@@ -18,4 +18,3 @@ func needsEscapingASM(s string, quote byte, mode int) bool {
 func needsEscapingOptimized(s string, quote byte, mode int) bool {
 	return needsEscapingASM(s, quote, mode)
 }
-
