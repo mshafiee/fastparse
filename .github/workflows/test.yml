@@ -51,15 +51,35 @@ jobs:
     - name: Test
       timeout-minutes: 20
       run: |
-        EXIT_CODE=0
-        go test -v -race -timeout=10m -coverprofile=coverage.txt -covermode=atomic ./... || EXIT_CODE=$?
+        echo "=== Running tests with race detector and coverage ==="
+        echo "Go version: $(go version)"
+        echo "GOMAXPROCS: $(go env GOMAXPROCS)"
+        echo "GOOS: $(go env GOOS)"
+        echo "GOARCH: $(go env GOARCH)"
+        
+        # Run tests with race detector and coverage
+        # Capture output and exit code
+        TEST_OUTPUT=$(go test -v -race -timeout=10m -coverprofile=coverage.txt -covermode=atomic ./... 2>&1)
+        TEST_EXIT=$?
+        
+        # Always show output
+        echo "$TEST_OUTPUT"
+        
+        # Check coverage file
         if [ -f coverage.txt ]; then
-          echo "Coverage file generated successfully"
+          echo "✓ Coverage file generated successfully ($(wc -l < coverage.txt) lines)"
           ls -lh coverage.txt
         else
-          echo "Warning: coverage.txt not generated"
+          echo "⚠ Warning: coverage.txt not generated"
         fi
-        exit $EXIT_CODE
+        
+        # Exit with test result
+        if [ $TEST_EXIT -ne 0 ]; then
+          echo "❌ Tests failed with exit code $TEST_EXIT"
+          exit $TEST_EXIT
+        else
+          echo "✓ All tests passed"
+        fi
     
     - name: Benchmark
       run: go test -bench=. -benchmem -run=^$ ./... | tee benchmark.txt
