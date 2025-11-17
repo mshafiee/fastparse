@@ -26,6 +26,26 @@ func ParseFloatAsm(s string) (float64, error)
 //go:noescape
 func ParseIntAsm(s string, bitSize int) (int64, error)
 
+// parseIntAVX512 is the AVX-512 optimized integer parser
+//
+//go:noescape
+func parseIntAVX512(s string, bitSize int) (result int64, ok bool)
+
+// parseIntAVX2 is the AVX2 optimized integer parser
+//
+//go:noescape
+func parseIntAVX2(s string, bitSize int) (result int64, ok bool)
+
+// parseIntBMI2 is the BMI2 optimized integer parser (fast overflow checking)
+//
+//go:noescape
+func parseIntBMI2(s string, bitSize int) (result int64, ok bool)
+
+// parseUintBMI2 is the BMI2 optimized unsigned integer parser
+//
+//go:noescape
+func parseUintBMI2(s string, bitSize int) (result uint64, ok bool)
+
 // parseFloat implements the main float parsing logic with assembly optimizations
 func parseFloat(s string) (float64, error) {
 	// Inline the parseFloatGeneric logic with assembly-optimized fast paths
@@ -82,7 +102,7 @@ func parseFloat(s string) (float64, error) {
 
 // parseInt implements the main integer parsing logic with assembly optimizations
 func parseInt(s string, bitSize int) (int64, error) {
-	// AMD64-optimized integer parser
+	// AMD64-optimized integer parser with CPU-specific dispatch
 	if len(s) == 0 {
 		return 0, ErrSyntax
 	}
@@ -91,9 +111,30 @@ func parseInt(s string, bitSize int) (int64, error) {
 		return 0, ErrSyntax
 	}
 
-	// For simple, short integers, use assembly fast path
+	// For simple integers, use optimized parsers based on CPU capabilities
 	if len(s) <= 19 {
-		// Try fast path for common integer patterns
+		// Try BMI2 path first (fastest overflow checking)
+		if HasBMI2() {
+			if result, ok := parseIntBMI2(s, bitSize); ok {
+				return result, nil
+			}
+		}
+		
+		// Try AVX-512 path (processes up to 16 digits in parallel)
+		if HasAVX512() && len(s) >= 4 {
+			if result, ok := parseIntAVX512(s, bitSize); ok {
+				return result, nil
+			}
+		}
+		
+		// Try AVX2 path (processes up to 8 digits in parallel)
+		if HasAVX2() && len(s) >= 4 {
+			if result, ok := parseIntAVX2(s, bitSize); ok {
+				return result, nil
+			}
+		}
+		
+		// Fall back to basic assembly fast path
 		if result, ok := parseIntFastAsm(s, bitSize); ok {
 			return result, nil
 		}

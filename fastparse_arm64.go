@@ -27,6 +27,11 @@ func ParseFloatAsm(s string) (float64, error)
 //go:noescape
 func ParseIntAsm(s string, bitSize int) (int64, error)
 
+// parseIntNEON is the NEON-optimized integer parser (processes 16 bytes in parallel)
+//
+//go:noescape
+func parseIntNEON(s string, bitSize int) (result int64, ok bool)
+
 // parseFloat implements the main float parsing logic with ARM64 assembly optimizations
 func parseFloat(s string) (float64, error) {
 	// Inline the parseFloatGeneric logic with assembly-optimized fast paths
@@ -83,7 +88,7 @@ func parseFloat(s string) (float64, error) {
 
 // parseInt implements the main integer parsing logic with ARM64 assembly optimizations
 func parseInt(s string, bitSize int) (int64, error) {
-	// ARM64-optimized integer parser
+	// ARM64-optimized integer parser with NEON SIMD
 	if len(s) == 0 {
 		return 0, ErrSyntax
 	}
@@ -92,9 +97,16 @@ func parseInt(s string, bitSize int) (int64, error) {
 		return 0, ErrSyntax
 	}
 
-	// For simple, short integers, use assembly fast path
+	// For simple integers, use NEON-optimized parser
 	if len(s) <= 19 {
-		// Try fast path for common integer patterns
+		// Try NEON path first (processes up to 16 bytes in parallel)
+		if len(s) >= 4 {
+			if result, ok := parseIntNEON(s, bitSize); ok {
+				return result, nil
+			}
+		}
+		
+		// Fall back to basic assembly fast path
 		if result, ok := parseIntFastAsm(s, bitSize); ok {
 			return result, nil
 		}
