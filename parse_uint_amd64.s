@@ -75,9 +75,9 @@ max_set:
 	// Check for signs - assembly fast path doesn't handle signs
 	// (signs are only allowed for base 0, which uses generic path)
 	MOVBLZX (DI), AX
-	CMPB AX, CHAR_PLUS
+	CMPB AL, $CHAR_PLUS
 	JE return_false
-	CMPB AX, CHAR_MINUS
+	CMPB AL, $CHAR_MINUS
 	JE return_false
 	
 check_hex_prefix:

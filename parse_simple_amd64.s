@@ -7,14 +7,14 @@
 #include "textflag.h"
 #include "constants_amd64.h"
 
-// func parseSimpleFastAsm(s string) (result float64, mantissa uint64, exp int, neg bool, ok bool)
+// func parseSimpleFastAsmRaw(ptr *byte, length int) (result float64, mantissa uint64, exp int, neg bool, ok bool)
 // Fast path parser for simple decimal floats: [-]?[0-9]+\.?[0-9]*([eE][-+]?[0-9]+)?
 // Returns (result, mantissa, exp, neg, true) on success.
 // Returns (0, mantissa, exp, neg, false) if parsed but can't convert (for Eisel-Lemire fallback).
-TEXT ·parseSimpleFastAsm(SB), NOSPLIT, $64-49
+TEXT ·parseSimpleFastAsmRaw(SB), NOSPLIT, $64-48
 	// Load string pointer and length
-	MOVQ s_base+0(FP), DI    // DI = string pointer
-	MOVQ s_len+8(FP), SI     // SI = string length
+	MOVQ ptr+0(FP), DI       // DI = string pointer
+	MOVQ length+8(FP), SI    // SI = string length
 	
 	// Check for nil pointer or empty string
 	TESTQ DI, DI
@@ -39,9 +39,9 @@ TEXT ·parseSimpleFastAsm(SB), NOSPLIT, $64-49
 	
 	// Parse optional sign
 	MOVBLZX (DI), AX
-	CMPB AX, CHAR_MINUS
+	CMPB AL, $CHAR_MINUS
 	JE set_negative
-	CMPB AX, CHAR_PLUS
+	CMPB AL, $CHAR_PLUS
 	JNE check_first_digit
 	// Skip '+' sign
 	INCQ R8
@@ -58,8 +58,8 @@ check_first_digit:
 	
 	// Must start with digit after sign
 	MOVBLZX (DI)(R8*1), AX
-	SUBB $CHAR_ZERO, AX
-	CMPB AX, $9
+	SUBB $CHAR_ZERO, AL
+	CMPB AL, $9
 	JA return_false
 	
 parse_mantissa_loop:
@@ -72,8 +72,8 @@ parse_mantissa_loop:
 	
 	// Check if digit ('0'-'9')
 	MOVQ CX, AX
-	SUBB $CHAR_ZERO, AX
-	CMPB AX, $9
+	SUBB $CHAR_ZERO, AL
+	CMPB AL, $9
 	JA not_mantissa_digit
 	
 	// It's a digit
@@ -99,7 +99,7 @@ mantissa_next:
 	
 not_mantissa_digit:
 	// Check for decimal point
-	CMPB CX, CHAR_DOT
+	CMPB CL, $CHAR_DOT
 	JNE check_exponent
 	
 	// Decimal point
@@ -111,9 +111,9 @@ not_mantissa_digit:
 	
 check_exponent:
 	// Check for exponent marker 'e' or 'E'
-	CMPB CX, $CHAR_E_LOWER
+	CMPB CL, $CHAR_E_LOWER
 	JE parse_exponent
-	CMPB CX, $CHAR_E_UPPER
+	CMPB CL, $CHAR_E_UPPER
 	JE parse_exponent
 	
 	// Not e/E, check if we're done
@@ -129,9 +129,9 @@ parse_exponent:
 	// Check for exponent sign
 	XORQ BX, BX              // BX = expNeg
 	MOVBLZX (DI)(R8*1), CX
-	CMPB CX, CHAR_MINUS
+	CMPB CL, $CHAR_MINUS
 	JE exp_negative
-	CMPB CX, CHAR_PLUS
+	CMPB CL, $CHAR_PLUS
 	JNE parse_exp_digits
 	INCQ R8
 	JMP parse_exp_digits
@@ -147,8 +147,8 @@ parse_exp_digits:
 	
 	// Must have at least one digit
 	MOVBLZX (DI)(R8*1), AX
-	SUBB $CHAR_ZERO, AX
-	CMPB AX, $9
+	SUBB $CHAR_ZERO, AL
+	CMPB AL, $9
 	JA return_false
 	
 exp_digit_loop:
@@ -161,8 +161,8 @@ exp_digit_loop:
 	
 	// Check if digit
 	MOVQ CX, AX
-	SUBB $CHAR_ZERO, AX
-	CMPB AX, $9
+	SUBB $CHAR_ZERO, AL
+	CMPB AL, $9
 	JA exp_done
 	
 	// Accumulate exponent

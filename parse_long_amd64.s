@@ -20,9 +20,9 @@ TEXT ·parseLongDecimalFastAsm(SB), NOSPLIT, $96-33
 	
 	// Check for sign
 	MOVBLZX (DI), AX
-	CMPB AX, CHAR_MINUS
+	CMPB AL, $CHAR_MINUS
 	JE has_negative
-	CMPB AX, CHAR_PLUS
+	CMPB AL, $CHAR_PLUS
 	JNE parse_digits
 	// Skip '+' sign
 	INCQ R8
@@ -40,8 +40,8 @@ check_after_sign:
 	
 	// Check next char is digit
 	MOVBLZX (DI)(R8*1), AX
-	SUBB $CHAR_ZERO, AX
-	CMPB AX, $9
+	SUBB $CHAR_ZERO, AL
+	CMPB AL, $9
 	JA return_false
 	
 parse_digits:
@@ -58,7 +58,7 @@ skip_zeros:
 	CMPQ R8, SI
 	JGE return_false
 	MOVBLZX (DI)(R8*1), AX
-	CMPB AX, $CHAR_ZERO
+	CMPB AL, $CHAR_ZERO
 	JNE collect_integer
 	INCQ R8
 	JMP skip_zeros
@@ -66,12 +66,12 @@ skip_zeros:
 collect_integer:
 	// Collect digits before decimal point
 	CMPQ R8, SI
-	JGE finalize_no_dot
+	JGE check_end
 	
 	MOVBLZX (DI)(R8*1), CX
 	MOVQ CX, AX
-	SUBB $CHAR_ZERO, AX
-	CMPB AX, $9
+	SUBB $CHAR_ZERO, AL
+	CMPB AL, $9
 	JA check_dot
 	
 	// It's a digit
@@ -89,7 +89,7 @@ skip_digit:
 	
 check_dot:
 	// Check for decimal point
-	CMPB CX, CHAR_DOT
+	CMPB CL, $CHAR_DOT
 	JNE check_end
 	INCQ R8
 	
@@ -100,8 +100,8 @@ collect_fraction:
 	
 	MOVBLZX (DI)(R8*1), CX
 	MOVQ CX, AX
-	SUBB $CHAR_ZERO, AX
-	CMPB AX, $9
+	SUBB $CHAR_ZERO, AL
+	CMPB AL, $9
 	JA check_end
 	
 	// It's a digit
@@ -115,10 +115,6 @@ collect_fraction:
 frac_skip:
 	INCQ R8
 	JMP collect_fraction
-	
-finalize_no_dot:
-	// No decimal point found
-	MOVQ R12, R11            // mantissaDigits = digitsBeforeDot
 	
 check_end:
 	// Validate we consumed everything
@@ -154,9 +150,7 @@ check_end:
 	XORPD X1, X0
 	
 apply_power:
-	// Apply power of 10
-	// For now, fall back to Go for complex power-of-10 multiplication
-	// Full implementation would use precomputed table
+	// Apply power of 10 using Go fallback for now
 	MOVQ -8(SP), AX
 	TESTQ AX, AX
 	JNZ return_false         // Non-zero exponent, use Go fallback

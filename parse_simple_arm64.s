@@ -7,14 +7,14 @@
 #include "textflag.h"
 #include "constants_arm64.h"
 
-// func parseSimpleFastAsm(s string) (result float64, mantissa uint64, exp int, neg bool, ok bool)
+// func parseSimpleFastAsmRaw(ptr *byte, length int) (result float64, mantissa uint64, exp int, neg bool, ok bool)
 // Fast path parser for simple decimal floats: [-]?[0-9]+\.?[0-9]*([eE][-+]?[0-9]+)?
 // Returns (result, mantissa, exp, neg, true) on success.
 // Returns (0, mantissa, exp, neg, false) if parsed but can't convert (for Eisel-Lemire fallback).
-TEXT ·parseSimpleFastAsm(SB), NOSPLIT, $64-42
+TEXT ·parseSimpleFastAsmRaw(SB), NOSPLIT, $64-40
 	// Load string pointer and length
-	MOVD s_base+0(FP), R0    // R0 = string pointer
-	MOVD s_len+8(FP), R1     // R1 = string length
+	MOVD ptr+0(FP), R0    // R0 = string pointer
+	MOVD length+8(FP), R1 // R1 = string length
 	
 	// Check for nil pointer or empty string
 	CBZ R0, return_false

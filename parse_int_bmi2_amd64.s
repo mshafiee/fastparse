@@ -41,9 +41,9 @@ bitsize_ok:
 parse_sign:
 	// Parse optional sign
 	MOVBLZX (DI), AX
-	CMPB AX, CHAR_MINUS
+	CMPB AL, $CHAR_MINUS
 	JE set_negative
-	CMPB AX, CHAR_PLUS
+	CMPB AL, $CHAR_PLUS
 	JE skip_sign
 	JMP digit_loop
 	
@@ -66,8 +66,8 @@ digit_loop:
 	
 	// Load and validate digit
 	MOVBLZX (DI)(R9*1), AX
-	SUBB $CHAR_ZERO, AX
-	CMPB AX, $9
+	SUBB $CHAR_ZERO, AL
+	CMPB AL, $9
 	JA check_valid
 	
 	// BMI2 OPTIMIZATION: Use MULX for overflow-free multiplication
@@ -139,7 +139,7 @@ check_valid:
 	
 	// Positive number - check we moved from start
 	MOVBLZX (DI), AX
-	CMPB AX, CHAR_PLUS
+	CMPB AL, $CHAR_PLUS
 	JE check_moved_1
 	JMP check_moved_0
 	
@@ -212,7 +212,7 @@ bitsize_ok_u:
 parse_digits_u:
 	// Parse optional '+' sign (no '-' for unsigned)
 	MOVBLZX (DI), AX
-	CMPB AX, CHAR_PLUS
+	CMPB AL, $CHAR_PLUS
 	JNE digit_loop_u
 	INCQ R9
 	CMPQ R9, SI
@@ -224,8 +224,8 @@ digit_loop_u:
 	
 	// Load and validate digit
 	MOVBLZX (DI)(R9*1), AX
-	SUBB $CHAR_ZERO, AX
-	CMPB AX, $9
+	SUBB $CHAR_ZERO, AL
+	CMPB AL, $9
 	JA check_valid_u
 	
 	// BMI2 MULX optimization

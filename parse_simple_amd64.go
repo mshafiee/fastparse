@@ -6,13 +6,23 @@
 
 package fastparse
 
-// parseSimpleFastAsm is the AMD64 assembly implementation of parseSimpleFast.
-// It parses simple decimal patterns: [-]?[0-9]+\.?[0-9]*([eE][-+]?[0-9]+)?
-// Returns (result, mantissa, exp, neg, true) on success.
-// Returns (0, mantissa, exp, neg, false) if parsed but can't convert (for Eisel-Lemire fallback).
+import "unsafe"
+
+// parseSimpleFastAsm is the Go wrapper that prepares the raw pointer/length
+// arguments for the AMD64 assembly implementation.
+func parseSimpleFastAsm(s string) (float64, uint64, int, bool, bool) {
+	var ptr *byte
+	if len(s) > 0 {
+		ptr = unsafe.StringData(s)
+	}
+	return parseSimpleFastAsmRaw(ptr, len(s))
+}
+
+// parseSimpleFastAsmRaw is implemented in parse_simple_amd64.s.
+// It expects the already-extracted data pointer and length.
 //
 //go:noescape
-func parseSimpleFastAsm(s string) (result float64, mantissa uint64, exp int, neg bool, ok bool)
+func parseSimpleFastAsmRaw(ptr *byte, length int) (result float64, mantissa uint64, exp int, neg bool, ok bool)
 
 // parseSimpleFast dispatches to the assembly implementation.
 func parseSimpleFast(s string) (float64, uint64, int, bool, bool) {

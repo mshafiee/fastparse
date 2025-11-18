@@ -24,9 +24,9 @@ TEXT ·parseHexFastAsm(SB), NOSPLIT, $96-33
 	
 	// Optional sign
 	MOVBLZX (DI), AX
-	CMPB AX, CHAR_MINUS
+	CMPB AL, $CHAR_MINUS
 	JE set_negative
-	CMPB AX, CHAR_PLUS
+	CMPB AL, $CHAR_PLUS
 	JNE check_0x_prefix
 	INCQ R8
 	JMP check_0x_prefix
@@ -103,7 +103,7 @@ not_a_f:
 	
 not_hex_digit:
 	// Check for decimal point
-	CMPB CX, CHAR_DOT
+	CMPB CL, $CHAR_DOT
 	JNE check_p_marker
 	TESTQ R13, R13
 	JNZ return_false         // Second dot
@@ -155,9 +155,9 @@ parse_binary_exp:
 	// Parse binary exponent
 	XORQ BX, BX              // BX = expNeg
 	MOVBLZX (DI)(R8*1), CX
-	CMPB CX, CHAR_MINUS
+	CMPB CL, $CHAR_MINUS
 	JE binary_exp_neg
-	CMPB CX, CHAR_PLUS
+	CMPB CL, $CHAR_PLUS
 	JNE parse_binary_digits
 	INCQ R8
 	JMP parse_binary_digits

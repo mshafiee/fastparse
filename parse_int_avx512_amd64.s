@@ -36,9 +36,9 @@ bitsize_ok:
 	
 	// Parse optional sign
 	MOVBLZX (DI), AX
-	CMPB AX, CHAR_MINUS
+	CMPB AL, $CHAR_MINUS
 	JE set_negative
-	CMPB AX, CHAR_PLUS
+	CMPB AL, $CHAR_PLUS
 	JE skip_sign
 	JMP start_parse
 	

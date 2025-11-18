@@ -29,9 +29,9 @@ TEXT ·parseDirectFloatAsm(SB), NOSPLIT, $64-33
 	
 	// Parse optional sign
 	MOVBLZX (DI), AX
-	CMPB AX, CHAR_MINUS
+	CMPB AL, $CHAR_MINUS
 	JE set_negative
-	CMPB AX, CHAR_PLUS
+	CMPB AL, $CHAR_PLUS
 	JNE check_first_digit
 	INCQ R8
 	JMP check_first_digit
@@ -47,8 +47,8 @@ check_first_digit:
 	
 	// Must start with digit
 	MOVBLZX (DI)(R8*1), AX
-	SUBB $CHAR_ZERO, AX
-	CMPB AX, $9
+	SUBB $CHAR_ZERO, AL
+	CMPB AL, $9
 	JA return_false
 	
 	// Parse integer part
@@ -60,8 +60,8 @@ parse_int_loop:
 	
 	// Check if digit
 	MOVQ CX, AX
-	SUBB $CHAR_ZERO, AX
-	CMPB AX, $9
+	SUBB $CHAR_ZERO, AL
+	CMPB AL, $9
 	JA not_int_digit
 	
 	// Limit to 8 digits for direct conversion
