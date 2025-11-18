@@ -16,7 +16,8 @@ TEXT ·parseSimpleFastAsm(SB), NOSPLIT, $64-42
 	MOVD s_base+0(FP), R0    // R0 = string pointer
 	MOVD s_len+8(FP), R1     // R1 = string length
 	
-	// Check for empty string
+	// Check for nil pointer or empty string
+	CBZ R0, return_false
 	CBZ R1, return_false
 	
 	// Initialize registers

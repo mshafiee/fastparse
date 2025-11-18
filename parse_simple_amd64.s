@@ -16,7 +16,9 @@ TEXT ·parseSimpleFastAsm(SB), NOSPLIT, $64-49
 	MOVQ s_ptr+0(FP), DI    // DI = string pointer
 	MOVQ s_len+8(FP), SI    // SI = string length
 	
-	// Check for empty string
+	// Check for nil pointer or empty string
+	TESTQ DI, DI
+	JZ return_false
 	TESTQ SI, SI
 	JZ return_false
 	
