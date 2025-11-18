@@ -73,6 +73,10 @@ func parseFloat(s string) (float64, error) {
 		if result, mantissa, exp, neg, ok := parseSimpleFast(s); ok {
 			return result, nil
 		} else if mantissa != 0 && exp >= -348 && exp <= 308 {
+			// For subnormal floats (exp < -307), use full FSA path for correct rounding
+			if exp < -307 {
+				return parseFloatGeneric(s)
+			}
 			// parseSimpleFast parsed successfully but couldn't convert - try Eisel-Lemire directly!
 			// This bypasses the FSA overhead (50-80ns savings) - matching strconv's approach
 			// Only do this if exp is in Eisel-Lemire's valid range

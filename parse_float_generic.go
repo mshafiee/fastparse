@@ -50,17 +50,20 @@ func parseFloatGeneric(s string) (float64, error) {
 		if result, mantissa, exp, neg, ok := parseDirectFloat(s); ok {
 			return result, nil
 		} else if mantissa != 0 && exp >= -348 && exp <= 308 {
-			// parseDirectFloat parsed but couldn't convert - try Eisel-Lemire directly!
-			// This is the key optimization: bypass FSA for large exponents
-			if result, ok := eisel_lemire.TryParse(mantissa, exp); ok {
-				if neg {
-					result = -result
+			// For subnormal floats (exp < -307), skip fast path for correct rounding
+			if exp >= -307 {
+				// parseDirectFloat parsed but couldn't convert - try Eisel-Lemire directly!
+				// This is the key optimization: bypass FSA for large exponents
+				if result, ok := eisel_lemire.TryParse(mantissa, exp); ok {
+					if neg {
+						result = -result
+					}
+					// Check for overflow or NaN
+					if math.IsInf(result, 0) || math.IsNaN(result) {
+						return result, ErrRange
+					}
+					return result, nil
 				}
-				// Check for overflow or NaN
-				if math.IsInf(result, 0) || math.IsNaN(result) {
-					return result, ErrRange
-				}
-				return result, nil
 			}
 		}
 		// Fall through if can't handle it
@@ -76,18 +79,21 @@ func parseFloatGeneric(s string) (float64, error) {
 		if result, mantissa, exp, neg, ok := parseSimpleFast(s); ok {
 			return result, nil
 		} else if mantissa != 0 && exp >= -348 && exp <= 308 {
-			// parseSimpleFast parsed successfully but couldn't convert - try Eisel-Lemire directly!
-			// This bypasses the FSA overhead (50-80ns savings) - matching strconv's approach
-			// Only do this if exp is in Eisel-Lemire's valid range
-			if result, ok := eisel_lemire.TryParse(mantissa, exp); ok {
-				if neg {
-					result = -result
+			// For subnormal floats (exp < -307), skip fast path for correct rounding
+			if exp >= -307 {
+				// parseSimpleFast parsed successfully but couldn't convert - try Eisel-Lemire directly!
+				// This bypasses the FSA overhead (50-80ns savings) - matching strconv's approach
+				// Only do this if exp is in Eisel-Lemire's valid range
+				if result, ok := eisel_lemire.TryParse(mantissa, exp); ok {
+					if neg {
+						result = -result
+					}
+					// Check for overflow or NaN
+					if math.IsInf(result, 0) || math.IsNaN(result) {
+						return result, ErrRange
+					}
+					return result, nil
 				}
-				// Check for overflow or NaN
-				if math.IsInf(result, 0) || math.IsNaN(result) {
-					return result, ErrRange
-				}
-				return result, nil
 			}
 		}
 		// Fall through to FSA if Eisel-Lemire also fails
