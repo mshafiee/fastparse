@@ -13,14 +13,19 @@
 // Returns (0, mantissa, exp, neg, false) if parsed but can't convert (for Eisel-Lemire fallback).
 TEXT ·parseSimpleFastAsm(SB), NOSPLIT, $64-49
 	// Load string pointer and length
-	MOVQ s_ptr+0(FP), DI    // DI = string pointer
-	MOVQ s_len+8(FP), SI    // SI = string length
+	MOVQ s_base+0(FP), DI    // DI = string pointer
+	MOVQ s_len+8(FP), SI     // SI = string length
 	
 	// Check for nil pointer or empty string
 	TESTQ DI, DI
 	JZ return_false
 	TESTQ SI, SI
 	JZ return_false
+	
+	// Additional safety check: ensure pointer is in reasonable range
+	// Pointers less than 0x1000 (4096) are likely invalid
+	CMPQ DI, $0x1000
+	JL return_false
 	
 	// Initialize registers
 	XORQ R8, R8              // R8 = index (i)
