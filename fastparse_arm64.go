@@ -12,6 +12,10 @@ import (
 	"github.com/mshafiee/fastparse/internal/eisel_lemire"
 )
 
+// minEiselLemireExp defines the minimum base-10 exponent for which we attempt
+// the Eisel-Lemire optimization.
+const minEiselLemireExp = -307
+
 // On arm64 we use assembly-optimized entry points implemented in
 // parse_float_arm64.s and parse_int_arm64.s
 

@@ -12,6 +12,11 @@ import (
 	"github.com/mshafiee/fastparse/internal/eisel_lemire"
 )
 
+// minEiselLemireExp defines the minimum base-10 exponent for which we attempt
+// the Eisel-Lemire optimization. On AMD64, we disable it for negative exponents
+// due to known issues with normal numbers (e.g. 1e-172).
+const minEiselLemireExp = 0
+
 // On amd64 we use assembly-optimized entry points implemented in
 // parse_float_amd64.s and parse_int_amd64.s
 
@@ -70,11 +75,14 @@ func parseFloat(s string) (float64, error) {
 	// Fast path for simple decimal patterns (70-80% of real-world inputs)
 	// Assembly-optimized version for AMD64
 	if len(s) < 32 {
-		if result, mantissa, exp, neg, ok := parseSimpleFast(s); ok {
+		result, mantissa, exp, neg, ok := parseSimpleFast(s)
+		if ok && exp >= minEiselLemireExp {
 			return result, nil
-		} else if mantissa != 0 && exp >= -348 && exp <= 308 {
-			// For subnormal floats (exp < -307), use full FSA path for correct rounding
-			if exp < -307 {
+		}
+
+		if mantissa != 0 && exp >= -348 && exp <= 308 {
+			// For subnormal floats (and negative exponents on AMD64), use full FSA path for correct rounding
+			if exp < minEiselLemireExp {
 				return parseFloatGeneric(s)
 			}
 			// parseSimpleFast parsed successfully but couldn't convert - try Eisel-Lemire directly!

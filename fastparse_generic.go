@@ -6,6 +6,10 @@
 
 package fastparse
 
+// minEiselLemireExp defines the minimum base-10 exponent for which we attempt
+// the Eisel-Lemire optimization.
+const minEiselLemireExp = -307
+
 // parseFloat provides a generic fallback for architectures without
 // assembly-optimized implementations (e.g., 386, wasm, etc.)
 func parseFloat(s string) (float64, error) {

@@ -47,11 +47,14 @@ func parseFloatGeneric(s string) (float64, error) {
 	// Handles: integers ("123"), simple decimals ("12.34")
 	// Target: 5-20 ns (faster than strconv's 23-33 ns)
 	if len(s) <= 16 {
-		if result, mantissa, exp, neg, ok := parseDirectFloat(s); ok {
+		result, mantissa, exp, neg, ok := parseDirectFloat(s)
+		if ok && exp >= minEiselLemireExp {
 			return result, nil
-		} else if mantissa != 0 && exp >= -348 && exp <= 308 {
-			// For subnormal floats (exp < -307), skip fast path for correct rounding
-			if exp >= -307 {
+		}
+
+		if mantissa != 0 && exp >= -348 && exp <= 308 {
+			// For subnormal floats (exp < minEiselLemireExp), skip fast path for correct rounding
+			if exp >= minEiselLemireExp {
 				// parseDirectFloat parsed but couldn't convert - try Eisel-Lemire directly!
 				// This is the key optimization: bypass FSA for large exponents
 				if result, ok := eisel_lemire.TryParse(mantissa, exp); ok {
@@ -76,11 +79,14 @@ func parseFloatGeneric(s string) (float64, error) {
 	if pattern == classifier.PatternSimple {
 		// Simple pattern: try improved fast path
 		// Format: [-+]?[0-9]+\.?[0-9]*([eE][-+]?[0-9]+)?
-		if result, mantissa, exp, neg, ok := parseSimpleFast(s); ok {
+		result, mantissa, exp, neg, ok := parseSimpleFast(s)
+		if ok && exp >= minEiselLemireExp {
 			return result, nil
-		} else if mantissa != 0 && exp >= -348 && exp <= 308 {
-			// For subnormal floats (exp < -307), skip fast path for correct rounding
-			if exp >= -307 {
+		}
+
+		if mantissa != 0 && exp >= -348 && exp <= 308 {
+			// For subnormal floats (exp < minEiselLemireExp), skip fast path for correct rounding
+			if exp >= minEiselLemireExp {
 				// parseSimpleFast parsed successfully but couldn't convert - try Eisel-Lemire directly!
 				// This bypasses the FSA overhead (50-80ns savings) - matching strconv's approach
 				// Only do this if exp is in Eisel-Lemire's valid range
@@ -644,15 +650,17 @@ func convertDecimalFloat(pc *parsedComponents) (float64, error) {
 	// Try Eisel-Lemire fast path (based on Go's strconv implementation)
 	// Only call if totalExp is in Eisel-Lemire's valid range
 	if pc.mantissa != 0 && !pc.hasMore && len(pc.mantDigits) <= 19 && totalExp >= -348 && totalExp <= 308 {
-		if result, ok := eisel_lemire.TryParse(pc.mantissa, totalExp); ok {
-			if pc.negative {
-				result = -result
+		if totalExp >= minEiselLemireExp {
+			if result, ok := eisel_lemire.TryParse(pc.mantissa, totalExp); ok {
+				if pc.negative {
+					result = -result
+				}
+				// Check for overflow or NaN
+				if math.IsInf(result, 0) || math.IsNaN(result) {
+					return result, ErrRange
+				}
+				return result, nil
 			}
-			// Check for overflow or NaN
-			if math.IsInf(result, 0) || math.IsNaN(result) {
-				return result, ErrRange
-			}
-			return result, nil
 		}
 	}
 

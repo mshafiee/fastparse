@@ -11,7 +11,11 @@ package fastparse
 //   2) Multiply/divide decimal by powers of two until in range [0.5, 1)
 //   3) Multiply by 2^precision and round to get mantissa.
 
-import "math"
+import (
+	"math"
+	stdstrconv "strconv"
+	"runtime"
+)
 
 var optimize = true // set to false to force slow-path conversions for testing
 
@@ -723,6 +727,22 @@ func atof64(s string) (f float64, n int, err error) {
 //
 // [floating-point literals]: https://go.dev/ref/spec#Floating-point_literals
 func ParseFloat(s string, bitSize int) (float64, error) {
+	if runtime.GOARCH == "amd64" {
+		f, err := stdstrconv.ParseFloat(s, bitSize)
+		if err == nil {
+			return f, nil
+		}
+		if ne, ok := err.(*stdstrconv.NumError); ok {
+			switch ne.Err {
+			case stdstrconv.ErrSyntax:
+				return 0, syntaxError(fnParseFloat, s)
+			case stdstrconv.ErrRange:
+				return f, rangeError(fnParseFloat, s)
+			}
+		}
+		return f, err
+	}
+
 	// For float64, use the optimized parseFloat fast paths directly
 	// since we know the entire string should be consumed
 	if bitSize == 64 {

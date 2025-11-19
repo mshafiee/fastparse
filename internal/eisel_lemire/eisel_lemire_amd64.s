@@ -26,15 +26,15 @@ TEXT ·tryParseAsm(SB), NOSPLIT, $0-49
 	JG return_false
 	
 	// Normalize mantissa: count leading zeros and shift
-	// Use LZCNT if available, otherwise BSR
 	MOVQ AX, BX                 // BX = mantissa (preserve for later)
-	
-	// Count leading zeros using LZCNT (supported on most modern CPUs)
-	BYTE $0xF3; BYTE $0x48; BYTE $0x0F; BYTE $0xBD; BYTE $0xD0  // LZCNTQ AX, DX
-	MOVQ DX, R8                 // R8 = clz
+
+	// Count leading zeros without relying on LZCNT (not available on all CPUs)
+	BSRQ AX, DX                 // DX = index of highest set bit (mantissa != 0 here)
+	MOVQ $63, R8
+	SUBQ DX, R8                 // R8 = clz
 	
 	// Shift mantissa left by clz
-	MOVQ DX, CX                 // CX = shift count
+	MOVQ R8, CX                 // CX = shift count
 	SHLQ CX, BX                 // BX = mantissa << clz
 	
 	// Restore exp10 to CX
