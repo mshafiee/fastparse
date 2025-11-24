@@ -1,4 +1,4 @@
-# fastparse
+# FastParse
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/mshafiee/fastparse.svg)](https://pkg.go.dev/github.com/mshafiee/fastparse)
 [![Go Version](https://img.shields.io/badge/go-1.24+-blue.svg)](https://go.dev/dl/)
